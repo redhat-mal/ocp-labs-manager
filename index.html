@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html itemscope itemtype="http://schema.org/QAPage">
+<head>
+    <title>ATT TELCO LABS PORTAL</title>
+    <script src="http://ajax.aspnetcdn.com/ajax/knockout/knockout-3.4.2.js" type="text/javascript"></script>
+    <script type="text/javascript" src="http://knockoutjs.com/js/jquery-1.11.1.min.js"></script>
+    <style>
+       .podRowAlert {color:red;}
+       .podRowNormal {color:black;}
+       .eventsDiv .show {
+          visibility: visible;
+       }
+    </style>
+    <link rel="stylesheet" href="/css/lab-portal.css">
+    <meta http-equiv="refresh" content="60" name="refresh">
+<body>
+<script>
+  var self = this;
+  function podsModel() {
+    self.labitems = ko.observableArray([]);
+    //self.config = ko.observable();
+    //self.events = ko.observableArray([]);
+    $.getJSON("/lab-config",function (data) {
+	    console.log("DATA:" + data.labitems);
+            self.labitems(data.labitems);
+            //self.config(data.config);
+            //console.log("Data:" + JSON.stringify(data));
+            //console.log("Config:" + self.config);
+            refreshTime = $('meta[name=refresh]').attr("content");
+            //console.log("Current Refresh Time:" + data.config.pageRefreshSeconds);
+            //if (data.config.pageRefreshSeconds)
+            //{
+            //    console.log("Updating Refresh Time")
+            //    $('meta[name=refresh]').attr('content', data.config.pageRefreshSeconds);
+	    //}
+     });
+};
+
+
+ $(document).ready(function() {
+    ko.applyBindings(new podsModel());
+});
+
+function doInstall(data) {
+   itemname = $(data).attr('itemname');
+   itemtype = $(data).attr('itemtype');
+alert(data);
+  $.getJSON("/install-item/" + itemname + "/" + itemtype ,function (data) {
+    console.log("STATUS:" + data);
+    //self.events(data);
+    //var popup = document.getElementById("myPopup");
+    //$("#eventsPara").html(JSON.stringify(data));
+    //$('.podName').html("<h3>Pod Name:" + podname + "</h3>");
+    //console.log("Pnd" + $('.podName'));
+    //popup.classList.toggle("show");
+  });
+	
+}
+
+function getEvents(data) {
+  //self = this;
+  //console.log($(data).attr('namespace'));
+  //console.log($(data).attr('podname'));
+  //namespace = $(data).attr('namespace');
+  //podname = $(data).attr('podname');
+  $.getJSON("/lab-status" ,function (data) {
+    console.log("STATUS:" + data);
+    self.events(data);
+    var popup = document.getElementById("myPopup");
+    //$("#eventsPara").html(JSON.stringify(data));
+    $('.podName').html("<h3>Pod Name:" + podname + "</h3>");
+    console.log("Pnd" + $('.podName'));
+    popup.classList.toggle("show");
+  });
+}
+
+function hideEvents() {
+    var popup = document.getElementById("myPopup");
+    popup.classList.toggle("show");
+}
+</script>
+<h1>ATT TELCO AWS LAB PORTAL</h1>
+<br/>
+<a href="/config">Pod Monitory Configuration page</a>
+<br>
+<a href="/pod-restart-alerts">Get Alerts</a>
+ <button onclick="hideEvents()">Close</button></span>
+<br><br>
+
+<div class="labStatus">
+<br>
+
+<table class="labitems">
+    <thead>
+        <tr>
+	  <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+	  <th>Status</th>
+          <th></th>
+      </tr>
+    </thead>
+      <tbody data-bind="foreach: labitems">
+        <tr data-bind="attr: {'class' : status == 'Warning' || status == 'Failure' ? 'podRowAlert' : 'podRowNormal'}">
+            <td data-bind="text: name"></td>
+            <td data-bind="text: type"></td>
+             <td data-bind="text: description"</td>
+	     <td data-bind="text: status"></td>
+             <td><button data-bind="attr: {itemname: name, itemtype: type}" onclick="doInstall(this)">Install</button></td>
+        </tr>
+      </tbody>
+  </table>
+</div> 
+</body>
+</html>

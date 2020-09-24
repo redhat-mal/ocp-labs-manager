@@ -1,0 +1,6 @@
+labitems:
+- name: ocp-demo-cluster
+  type: ocp4
+  config-dir: ocp-demo-cluster
+  description: Openshift cluster used to demo ATT functionality
+  url: https://labs.rhtelco.io

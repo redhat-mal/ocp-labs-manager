@@ -1,0 +1,30 @@
+.labitems  th {
+    background-color: #4CAF50;
+    color: white;
+    text-align: left;
+    height: 30px;
+  }
+.labitems  th, td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+.labitems th {
+  text-align: left;
+  height: 30px;
+}
+
+.labitems table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.labStatus div {
+	width: 600px;
+	border: 1px;
+}
+
+
+
+

@@ -1,0 +1,6 @@
+gunicorn
+Flask
+websocket-client
+pytz
+PyYaml
+requests
