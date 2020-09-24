@@ -1,4 +1,6 @@
+#!/usr/bin/env bash
 echo "Installing Openshift 4"
+cd $1
 rm -rf ./ocp-install
 mkdir ocp-install
 cp ./ocp-config/install-config.yaml ./ocp-install/

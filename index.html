@@ -16,7 +16,7 @@
 <body>
 <script>
   var self = this;
-  function podsModel() {
+  function labsModel() {
     self.labitems = ko.observableArray([]);
     //self.config = ko.observable();
     //self.events = ko.observableArray([]);
@@ -36,17 +36,25 @@
      });
 };
 
+ function showInstall(data) {
+	 console.log("(" + data + ")");
+	 bReturn = (data == 'new');
+	 console.log(bReturn);
+	 return bReturn;
+ }
 
  $(document).ready(function() {
-    ko.applyBindings(new podsModel());
+    ko.applyBindings(new labsModel());
 });
 
 function doInstall(data) {
    itemname = $(data).attr('itemname');
    itemtype = $(data).attr('itemtype');
-alert(data);
+   console.log(data);
   $.getJSON("/install-item/" + itemname + "/" + itemtype ,function (data) {
     console.log("STATUS:" + data);
+    if (data.status == "error")
+	  alert("Error installing:" + data.message);
     //self.events(data);
     //var popup = document.getElementById("myPopup");
     //$("#eventsPara").html(JSON.stringify(data));
@@ -54,14 +62,17 @@ alert(data);
     //console.log("Pnd" + $('.podName'));
     //popup.classList.toggle("show");
   });
-	
+}
+function doDelete(data) {
+   itemname = $(data).attr('itemname');
+   itemtype = $(data).attr('itemtype');
+alert(data);
+  $.getJSON("/remove-item/" + itemname + "/" + itemtype ,function (data) {
+    console.log("STATUS:" + data);
+  });
 }
 
 function getEvents(data) {
-  //self = this;
-  //console.log($(data).attr('namespace'));
-  //console.log($(data).attr('podname'));
-  //namespace = $(data).attr('namespace');
   //podname = $(data).attr('podname');
   $.getJSON("/lab-status" ,function (data) {
     console.log("STATUS:" + data);
@@ -106,7 +117,12 @@ function hideEvents() {
             <td data-bind="text: type"></td>
              <td data-bind="text: description"</td>
 	     <td data-bind="text: status"></td>
+	     <!-- ko if: (status == "installed" || status == "failed") -->
+             <td><button data-bind="attr: {itemname: name, itemtype: type}" onclick="doDelete(this)">Delete</button></td>
+	     <!-- /ko -->
+	      <!-- ko if: (status == "deleted" || status == "new")  -->
              <td><button data-bind="attr: {itemname: name, itemtype: type}" onclick="doInstall(this)">Install</button></td>
+             <!-- /ko -->
         </tr>
       </tbody>
   </table>

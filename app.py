@@ -5,9 +5,10 @@ import sys
 import traceback
 import json
 import yaml
+import logging
+import labsmgr
 
 application = Flask(__name__)
-
 
 def root_dir():  # pragma: no cover
     return os.path.abspath(os.path.dirname(__file__))
@@ -21,10 +22,10 @@ def get_file(filename):  # pragma: no cover
 
 def getItemStatus(configData):
     returnConfig = []
-    print("Labs Config:" + str(configData))
+    logging.info("Labs Config:" + str(configData))
 
     for configItem in configData:
-        print("ITEM:" + str(configItem))
+        logging.debug("ITEM:" + str(configItem))
         manager = ManagerFactory.getManager(configItem["name"], configItem["type"])
         configItem['status'] = manager.get_status()
         returnConfig.append(configItem);
@@ -39,18 +40,31 @@ def get_config():
     except:
        print(traceback.format_exc())
        labsconfig = '{"labitems" : [] }'
-    print("Labs Config:" + str(labsconfig))
+    logging.info("Labs Config:" + str(labsconfig))
     return labsconfig
 
 @application.route("/install-item/<itemname>/<itemtype>")
 def do_install(itemname, itemtype):
-    print("Installing:" + itemname + " type:" + itemtype)
-    status = '{"status" : "Installing" }'
-    #try:
-       #status = json.dumps(PodStatusReader().get_events(namespace,podname)) 
-    #except:
-    #   print(traceback.format_exc())
-    #   status = '{"events" : "Pod Monitor Error"}'
+    loging.info("Installing:" + itemname + " type:" + itemtype)
+    status = {"status" : "None" }
+    try:
+        manager = ManagerFactory.getManager(itemname, itemtype)
+        status = manager.do_install(itemname)
+    except Exception as ex:
+       logging.error("Error on install: %s", str(ex))
+       status = {"status" : "failed" , "message" : str(ex) }
+    return status
+
+@application.route("/remove-item/<itemname>/<itemtype>")
+def do_remove(itemname, itemtype):
+    logging.info("Removing:" + itemname + " type:" + itemtype)
+    status = {"status" : "None" }
+    try:
+        manager = ManagerFactory.getManager(itemname, itemtype)
+        status = manager.do_remove(itemname)
+    except Exception as ex:
+       logging.error("Error on install: %s", str(ex))
+       status = {"status" : "failed" , "message" : str(ex) }
     return status
 
 @application.route("/css/lab-portal.css")

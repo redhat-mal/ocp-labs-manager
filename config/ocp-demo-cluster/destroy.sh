@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+cd $1
 echo "Destroying Openshift 4"
 cat > ./install-status << EOF
 destroying
