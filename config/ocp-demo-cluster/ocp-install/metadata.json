@@ -1,0 +1,1 @@
+{"clusterName":"att-demo.ocp-labs","clusterID":"2ab8a2db-378d-4f2d-bc7e-241010337f80","infraID":"att-demo-ocp-labs-nks5v","aws":{"region":"us-east-2","identifier":[{"kubernetes.io/cluster/att-demo-ocp-labs-nks5v":"owned"},{"openshiftClusterID":"2ab8a2db-378d-4f2d-bc7e-241010337f80"}]}}

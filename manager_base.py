@@ -5,9 +5,11 @@ import labsmgr
 
 class AbstractLabsManager:
 
-    def __init__(self, lab_name):
+    def __init__(self, lab_name, config_dir, item_vars):
         """Constructor"""
         self.lab_name = lab_name
+        self.config_dir = config_dir
+        self.item_vars = item_vars
 
     @abstractmethod
     def get_status(self):
@@ -25,7 +27,7 @@ class AbstractLabsManager:
         pass
 
     def root_dir(self):  # pragma: no cover
-      return os.path.abspath(os.path.dirname(__file__)) + "/config/" + self.lab_name + "/"
+      return os.path.abspath(os.path.dirname(__file__)) + "/config/" + self.config_dir + "/"
 
     def get_file(self, filename):  # pragma: no cover
         logging.info("Reading File: %s, , %s", self.root_dir(), filename)

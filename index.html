@@ -66,7 +66,6 @@ function doInstall(data) {
 function doDelete(data) {
    itemname = $(data).attr('itemname');
    itemtype = $(data).attr('itemtype');
-alert(data);
   $.getJSON("/remove-item/" + itemname + "/" + itemtype ,function (data) {
     console.log("STATUS:" + data);
   });
