@@ -1,0 +1,16 @@
+# Default values for tekton-pipeline.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+
+application_name: spring-boot-demo
+
+build:
+  image_stream_namespace: openshift
+  namespace: att-dev
+  image_stream_name: redhat-openjdk18-openshift:1.8
+  source_repo: https://github.com/redhat-cop/spring-rest.git 
+  source_ref: master
+  source_context_dir: basic-spring-boot
+  service_account: pipeline
+

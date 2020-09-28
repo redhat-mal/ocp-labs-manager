@@ -1,0 +1,161 @@
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  labels:
+    app.kubernetes.io/name: {{ .Values.application_name }}
+  name: {{ .Values.build.service_account }}
+  namespace: {{ .Values.build.namespace }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  labels:
+    app.kubernetes.io/name: {{ .Values.application_name }}
+  name: {{ .Values.build.service_account }}_edit
+  namespace: {{ .Values.build.namespace }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: edit
+subjects:
+- kind: ServiceAccount
+  name: {{ .Values.build.service_account }}
+---
+apiVersion: tekton.dev/v1alpha1
+kind: PipelineResource
+metadata:
+  labels:
+    app.kubernetes.io/name: {{ .Values.application_name }}
+  name: {{ .Values.application_name }}-image
+  namespace: {{ .Values.build.namespace }}
+spec:
+  type: image
+  params:
+  - name: url
+    value: image-registry.openshift-image-registry.svc:5000/{{ .Values.build.namespace }}/{{ .Values.application_name }}
+---
+apiVersion: tekton.dev/v1alpha1
+kind: PipelineResource
+metadata:
+  labels:
+    app.kubernetes.io/name: {{ .Values.application_name }}
+  name: {{ .Values.application_name }}-git
+  namespace: {{ .Values.build.namespace }}
+spec:
+  type: git
+  params:
+  - name: url
+    value: {{ .Values.build.source_repo }}
+  - name: revision
+    value: {{ .Values.build.source_ref }}
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  labels:
+    app.kubernetes.io/name: {{ .Values.application_name }}
+  name: maven-build-binary-build
+  namespace: {{ .Values.build.namespace }}
+spec:
+  resources:
+    inputs:
+    - name: source
+      type: git
+  steps:
+  - name: package
+    image: maven:3.6.0-jdk-8-slim
+    workingDir: /workspace/source
+    command:
+    - /usr/bin/mvn
+    args:
+    - package
+  - name: run-test
+    image: maven:3.6.0-jdk-8-slim
+    workingDir: /workspace/source
+    command:
+    - /usr/bin/mvn
+    args:
+    - test
+  - name: make-upload-dir
+    image: quay.io/openshift-pipeline/openshift-cli:latest
+    command: ["mkdir"]
+    args:
+      - -p
+      - /workspace/source/upload
+  - name: copy-assets
+    image: quay.io/openshift-pipeline/openshift-cli:latest
+    command: ["cp"]
+    args:
+      - /workspace/source/target/shift-rest-1.0.0-SNAPSHOT.jar
+      - /workspace/source/upload
+  - name: oc-binary-build
+    image: quay.io/openshift-pipeline/openshift-cli:latest
+    command: ["/usr/local/bin/oc"]
+    workingDir: /workspace/source/upload
+    args:
+      - start-build
+      - -w
+      - -F
+      - {{ .Values.application_name }}
+      - --from-dir
+      - "."
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  labels:
+    app.kubernetes.io/name: {{ .Values.application_name }}
+  name: repo-update
+  namespace: {{ .Values.build.namespace }}
+spec:
+  params:
+    - name: fromNamespace
+      description: The namespace we are tagging from
+    - name: toNamespace
+      description: The namespace we are tagging to
+    - name: tag
+      description: The image tag
+    - name: imageStream
+      description: The imageStream
+    - name: deploymentResource
+      description: the deployment resource, e.g deployment or deploymentconfig
+    - name: deployment
+      description: the deployment name
+  steps:
+    - name: tag-image
+      image: quay.io/openshift-pipeline/openshift-cli:latest
+      command: ["/usr/local/bin/oc"]
+      args:
+        - tag
+        - "$(params.fromNamespace)/$(params.imageStream):$(params.tag)"
+        - "$(params.toNamespace)/$(params.imageStream):$(params.tag)"
+    - name: verify-deployment
+      image: quay.io/openshift-pipeline/openshift-cli:latest
+      command: ["oc"]
+      args:
+        - rollout
+        - status
+        - "$(params.deploymentResource)/$(params.deployment)"
+        - -n
+        - "$(params.toNamespace)"
+---
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  labels:
+    app.kubernetes.io/name: {{ .Values.application_name }}
+  name: {{ .Values.application_name }}-pipeline
+  namespace: {{ .Values.build.namespace }}
+spec:
+  resources:
+  - name: {{ .Values.application_name }}-git
+    type: git
+  tasks:
+  - name: build-image
+    taskRef:
+      name: maven-build-binary-build
+    resources:
+      inputs:
+      - name: source
+        resource: {{ .Values.application_name }}-git
