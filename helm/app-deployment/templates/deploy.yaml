@@ -61,7 +61,7 @@ spec:
               value: "8888"
             - name: AUTO_DEPLOY_EXPLODED
               value: "false"
-          image: {{ .Values.application_image_name }}:{{ .Values.application_image_tag }}
+          image: {{ .Release.Name }}:{{ .Values.application_image_tag }}
           imagePullPolicy: Always
           livenessProbe: 
           readinessProbe: 
@@ -84,3 +84,16 @@ spec:
             secretName: {{ .Values.tls.httpsSecret }}
 {{- end }}
       terminationGracePeriodSeconds: 75
+  triggers:
+  - type: ImageChange
+    imageChangeParams:
+      automatic: true
+      containerNames:
+      - nodejs-ex-git
+      from:
+        kind: ImageStreamTag
+        namespace: {{ .Values.namespace }}
+        name: {{ .Release.Name }}:{{ .Values.application_image_tag }}
+
+
+

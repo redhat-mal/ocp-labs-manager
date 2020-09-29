@@ -1,0 +1,11 @@
+kind: ImageStream
+apiVersion: image.openshift.io/v1
+metadata:
+  name: {{ .Release.Name }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Release.Name }}
+    app.kubernetes.io/name: {{ .Release.Name }}
+spec:
+  lookupPolicy:
+    local: false
