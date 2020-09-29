@@ -1,0 +1,54 @@
+# Default values for pipeline-tools.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+#
+
+namespace: labs-cicd
+
+argocd:
+  enabled: true
+  name: argocd
+  projects:
+  - name: att-stage
+  - name: att-prod
+
+sonar:
+  enabled: true
+  name: sonarqube
+  build:
+    source_repository_url: "https://github.com/redhat-mal/containers-quickstarts.git"
+    source_repository_ref: "master"
+    source_context_dir: "sonarqube"
+    from_docker_image: "sonarqube"
+    from_docker_tag: "7.9.1-community"
+    from_docker_image_registry_url: "docker.io/sonarqube"
+
+  deploy:
+    persistence_enabled: false
+    postgres_enabled: false
+    ldap_enabled: false
+    postgres_database_name: sonar
+    sonarqube_persistent_volume_size: 5Gi
+    sonar_auth_realm: ''
+    sonar_autocreate_users: 'false'
+    proxy_host: ''
+    proxy_port: ''
+    proxy_user: ''
+    proxy_password: ''
+    sonar_ldap_enabled: false
+    sonar_ldap_bind_dn: ''
+    sonar_ldap_bind_password: ''
+    sonar_ldap_url: ''
+    sonar_ldap_realm: ''
+    sonar_ldap_authentication: ''
+    sonar_ldap_user_basedn: ''
+    sonar_ldap_user_real_name_attr: ''
+    sonar_ldap_user_email_attr: ''
+    sonar_ldap_user_request: ''
+    sonar_ldap_group_basedn: ''
+    sonar_ldap_group_request: ''
+    sonar_ldap_group_id_attr: ''
+    sonar_ldap_contextfactory: com.sun.jndi.ldap.ldapctxfactory
+    jenkins_url: 'http://jenkins'
+    sonar_search_java_additional_opts: ''
+

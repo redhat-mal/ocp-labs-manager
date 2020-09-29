@@ -3,10 +3,16 @@
 # Declare variables to be passed into your templates.
 
 
+deployment:
+  projects:
+  - name: att-stage
+  - name: att-prod
+
 application_name: spring-rest-app
 application_tag: latest
+application_stage_namespace: att-stage
 
-build:
+pipeline:
   image_stream_namespace: openshift
   namespace: att-demo
   image_stream_name: openjdk-8-rhel8:1.2
@@ -16,5 +22,10 @@ build:
   webhook_secret_key: ATT_DEMO_KEY
   webhook_secret_val: foo-bar-123
   resource_name: spring-rest-1.0.0.jar
+
+sonar:
+  route: http://sonarqube-insecure-labs-cicd.apps.att-demo.ocp-labs.rhtelco.io/
+  username: admin
+  password: admin
   
 

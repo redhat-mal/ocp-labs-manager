@@ -1,0 +1,51 @@
+{{- if eq .Values.argocd.enabled true }}
+---
+apiVersion: argoproj.io/v1alpha1
+kind: ArgoCD
+metadata:
+  name: argocd
+  labels:
+    app: argocd
+  namespace: {{ .Values.namespace }} 
+spec:
+  applicationInstanceLabelKey: rht-labs.com/uj
+  accounts.admin: login, apiKey
+  accounts.alice: apiKey
+  accounts.alice.enabled: "false"
+  dex:
+    openShiftOAuth: true
+  ha:
+    enabled: false
+  grafana:
+    enabled: true
+    route:
+      enabled: true
+    size: 1
+  prometheus:
+    enabled: true
+    route:
+      enabled: true
+    size: 1
+  rbac:
+    defaultPolicy: role:admin
+  initialRepositories: |
+    - name: ubiquitous-journey
+      url: https://github.com/rht-labs/ubiquitous-journey.git
+    - name: rht-labs
+      type: helm
+      url: https://rht-labs.github.io/helm-charts
+  insecure: false
+  server:
+    autoscale:
+      enabled: false
+    route:
+      enabled: true
+    service:
+      type: ClusterIP
+  statusBadgeEnabled: true
+  usersAnonymousEnabled: false
+  version: "v1.6.2"
+
+{{- end }}
+
+

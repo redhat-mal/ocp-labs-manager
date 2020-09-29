@@ -5,7 +5,7 @@ metadata:
   labels:
     app.kubernetes.io/name: {{ .Values.application_name }}
   name: {{ .Release.Name }}-sa
-  namespace: {{ .Values.build.namespace }}
+  namespace: {{ .Values.pipeline.namespace }}
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
@@ -13,7 +13,7 @@ metadata:
   labels:
     app.kubernetes.io/name: {{ .Values.application_name }}
   name: {{ .Release.Name }}-sa_edit
-  namespace: {{ .Values.build.namespace }}
+  namespace: {{ .Values.pipeline.namespace }}
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
@@ -28,12 +28,12 @@ metadata:
   labels:
     app.kubernetes.io/name: {{ .Values.application_name }}
   name: {{ .Release.Name }}-image
-  namespace: {{ .Values.build.namespace }}
+  namespace: {{ .Values.pipeline.namespace }}
 spec:
   type: image
   params:
   - name: url
-    value: image-registry.openshift-image-registry.svc:5000/{{ .Values.build.namespace }}/{{ .Values.application_name }}
+    value: image-registry.openshift-image-registry.svc:5000/{{ .Values.pipeline.namespace }}/{{ .Values.application_name }}
 ---
 apiVersion: tekton.dev/v1alpha1
 kind: PipelineResource
@@ -41,14 +41,14 @@ metadata:
   labels:
     app.kubernetes.io/name: {{ .Values.application_name }}
   name: {{ .Release.Name }}-git
-  namespace: {{ .Values.build.namespace }}
+  namespace: {{ .Values.pipeline.namespace }}
 spec:
   type: git
   params:
   - name: url
-    value: {{ .Values.build.source_repo }}
+    value: {{ .Values.pipeline.source_repo }}
   - name: revision
-    value: {{ .Values.build.source_ref }}
+    value: {{ .Values.pipeline.source_ref }}
 ---
 apiVersion: tekton.dev/v1beta1
 kind: Task
@@ -56,7 +56,7 @@ metadata:
   labels:
     app.kubernetes.io/name: {{ .Values.application_name }}
   name: maven-build-binary-build
-  namespace: {{ .Values.build.namespace }}
+  namespace: {{ .Values.pipeline.namespace }}
 spec:
   resources:
     inputs:
@@ -80,15 +80,8 @@ spec:
     image: quay.io/openshift-pipeline/openshift-cli:latest
     command: ["cp"]
     args:
-      - /workspace/source/target/{{ .Values.build.resource_name }}
+      - /workspace/source/target/{{ .Values.pipeline.resource_name }}
       - /workspace/source/upload
-        #  - name: run-test
-        #image: maven:3.6.0-jdk-8-slim
-        #workingDir: /workspace/source
-        #command:
-        #- /usr/bin/mvn
-        #args:
-        #- test
   - name: oc-binary-build
     image: quay.io/openshift-pipeline/openshift-cli:latest
     command: ["/usr/local/bin/oc"]
@@ -100,6 +93,14 @@ spec:
     - {{ .Values.application_name }}
     - --from-dir
     - "."
+  - name: oc-tag-image
+    image: quay.io/openshift-pipeline/openshift-cli:latest
+    command: ["/usr/local/bin/oc"]
+    workingDir: /workspace/source/upload
+    args:
+    - tag
+    - {{ .Values.pipeline.namespace }}/{{ .Values.application_name }}:latest
+    - {{ .Values.application_stage_namespace }}/{{ .Values.application_name }}:latest
 ---
 apiVersion: tekton.dev/v1beta1
 kind: Task
@@ -107,7 +108,7 @@ metadata:
   labels:
     app.kubernetes.io/name: {{ .Values.application_name }}
   name: repo-update
-  namespace: {{ .Values.build.namespace }}
+  namespace: {{ .Values.pipeline.namespace }}
 spec:
   params:
     - name: fromNamespace
@@ -140,18 +141,153 @@ spec:
         - -n
         - "$(params.toNamespace)"
 ---
+apiVersion: tekton.dev/v1alpha1
+kind: Task
+metadata:
+  name: mvn
+spec:
+  workspaces:
+  - name: maven-repo
+  inputs:
+    params:
+    - name: GOALS
+      description: The Maven goals to run
+      type: array
+      default: ["package"]
+    resources:
+    - name: source
+      type: git
+  steps:
+    - name: mvn
+      image: gcr.io/cloud-builders/mvn
+      workingDir: /workspace/source
+      command: ["/usr/bin/mvn"]
+      args:
+        - -Dmaven.repo.local=$(workspaces.maven-repo.path)
+        - "$(inputs.params.GOALS)"
+---
+kind: Task
+apiVersion: tekton.dev/v1alpha1
+metadata:
+  name: sonar-scan
+spec:
+  workspaces:
+  - name: maven-repo
+  inputs:
+    params:
+      - name: POM_FILE
+        description: The pom file to process
+        default: ./pom.xml
+      - name: SONAR_USER
+        default: "admin"
+      - name: SONAR_PASSWORD
+        default: "admin"
+      - name: SONAR_URL
+        default: ""
+    resources:
+    - name: source
+      type: git
+    #results:
+    #- name: scan-source
+    #description: "Scan results are found here"
+  steps:
+    - name: scan-source
+      image: gcr.io/cloud-builders/mvn
+      workingdir: /workspace/source
+      envFrom:
+        - configMapRef:
+            name: sonarqube-config
+            optional: true
+        - secretRef:
+            name: sonarqube-access
+            optional: true
+      command: ["/usr/bin/mvn"]
+      args:
+      #- "-lrt"
+      - package
+      - org.sonarsource.scanner.maven:sonar-maven-plugin:3.6.0.1398:sonar
+      - '-f' 
+      - ./pom.xml
+      - "-Dsonar.login=$(inputs.params.SONAR_USER)"
+      - "-Dsonar.password=$(inputs.params.SONAR_PASSWORD)" 
+      - "-Dsonar.host.url=$(inputs.params.SONAR_URL)"
+---
 apiVersion: tekton.dev/v1beta1
 kind: Pipeline
 metadata:
   labels:
     app.kubernetes.io/name: {{ .Values.application_name }}
   name: {{ .Release.Name }}-pipeline
-  namespace: {{ .Values.build.namespace }}
+  namespace: {{ .Values.pipeline.namespace }}
 spec:
+  workspaces:
+  - name: local-tssc-repo
+  params:
+    - name: SONAR_URL
+      type: string
+      description: Sonar Url
+      default: http://sonarqube:9000
+    - name: SONAR_USER
+      type: string
+      default: admin
+    - name: SONAR_PASSWORD
+      type: string
+      default: admin
   resources:
   - name: {{ .Release.Name }}-git
     type: git
   tasks:
+  - name: compile
+    taskRef:
+      name: mvn
+      kind: Task
+    workspaces:
+    - name: maven-repo
+      workspace: local-tssc-repo
+    params:
+      - name: GOALS
+        value:
+        - "compile"
+    resources:
+      inputs:
+      - name: source
+        resource: {{ .Release.Name }}-git
+  - name: unit-test
+    taskRef:
+      name: mvn
+      kind: Task
+    workspaces:
+    - name: maven-repo
+      workspace: local-tssc-repo
+    runAfter:
+    - compile
+    params:
+      - name: GOALS
+        value: 
+        - "test"
+    resources:
+      inputs:
+      - name: source
+        resource: {{ .Release.Name }}-git
+  - name: sonar-scan
+    taskRef:
+      name: sonar-scan
+    workspaces:
+    - name: maven-repo
+      workspace: local-tssc-repo
+    params:
+    - name: SONAR_USER
+      value: "$(params.SONAR_USER)"
+    - name: SONAR_PASSWORD
+      value: "$(params.SONAR_PASSWORD)"
+    - name: SONAR_URL
+      value: "$(params.SONAR_URL)"
+    resources:
+      inputs:
+      - name: source
+        resource: {{ .Release.Name }}-git
+    runAfter:
+    - unit-test
   - name: build-image
     taskRef:
       name: maven-build-binary-build
@@ -159,3 +295,6 @@ spec:
       inputs:
       - name: source
         resource: {{ .Release.Name }}-git
+    runAfter:
+    - sonar-scan
+

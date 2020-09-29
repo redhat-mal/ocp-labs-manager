@@ -3,24 +3,24 @@ apiVersion: v1
 kind: Secret
 metadata:
   name: webhook-secret
-  namespace: {{ .Values.build.namespace }}
+  namespace: {{ .Values.pipeline.namespace }}
 stringData:
-  token: {{ .Values.build.webhook_secret_key }}
-  secret: {{ .Values.build.webhook_secret_val }}
+  token: {{ .Values.pipeline.webhook_secret_key }}
+  secret: {{ .Values.pipeline.webhook_secret_val }}
 ---
 apiVersion: triggers.tekton.dev/v1alpha1
 kind: TriggerTemplate
 metadata:
   name: {{ .Release.Name }}-build-triggertemplate
-  namespace: {{ .Values.build.namespace }}
+  namespace: {{ .Values.pipeline.namespace }}
 spec:
   params:
     - name: gitrevision
       description: The git revision
-      default: {{ .Values.build.source_ref }}
+      default: {{ .Values.pipeline.source_ref }}
     - name: gitrepositoryurl
       description: The git repository url
-      default: {{ .Values.build.source_repo }} 
+      default: {{ .Values.pipeline.source_repo }} 
   resourcetemplates:
     - apiVersion: tekton.dev/v1alpha1
       kind: PipelineResource
@@ -48,16 +48,27 @@ spec:
         params:
           - name: imageTag
             value: $(params.gitrevision)
+          - name: SONAR_URL
+            value: {{ .Values.sonar.route }}
+          - name: SONAR_USER
+            value: {{ .Values.sonar.username }}
+          - name: SONAR_PASSWORD
+            value: {{ .Values.sonar.password }}
         resources:
           - name: {{ .Release.Name }}-git
             resourceRef:
               name: {{ .Release.Name }}-git-$(uid)
+        workspaces:
+        - name: local-tssc-repo
+          emptyDir: {}
+          # persistentVolumeClaim:
+          #  claimName: tssc-pipe-storage
 ---
 apiVersion: triggers.tekton.dev/v1alpha1
 kind: TriggerBinding
 metadata:
   name: {{ .Release.Name }}-pipelinebinding
-  namespace: {{ .Values.build.namespace }}
+  namespace: {{ .Values.pipeline.namespace }}
 spec:
   params:
     - name: gitrevision
@@ -69,7 +80,7 @@ apiVersion: triggers.tekton.dev/v1alpha1
 kind: EventListener
 metadata:
   name: {{ .Release.Name }}-webhook
-  namespace: {{ .Values.build.namespace }}
+  namespace: {{ .Values.pipeline.namespace }}
 spec:
   serviceAccountName: {{ .Release.Name }}-sa
   triggers:
@@ -86,7 +97,7 @@ metadata:
     app.kubernetes.io/part-of: Triggers
     eventlistener: {{ .Release.Name }}-webhook
   name: webhook-{{ .Release.Name }}
-  namespace: {{ .Values.build.namespace }}
+  namespace: {{ .Values.pipeline.namespace }}
 spec:
   port:
     targetPort: http-listener

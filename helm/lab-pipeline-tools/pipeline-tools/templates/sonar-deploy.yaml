@@ -1,0 +1,246 @@
+{{- if eq .Values.sonar.enabled true }}
+{{- if .Values.sonar.deploy.sonar_ldap_enabled }}
+apiVersion: v1
+kind: Secret
+stringData:
+  password: {{ .values.deploy.sonar_ldap_bind_password }}
+  username: {{ .values.deploy.sonar_ldap_bind_dn }}
+metadata:
+  name: {{ template "pipeline-tools.name" . }}-ldap-bind-dn
+  namespace: {{ .Values.namespace }}
+type: kubernetes.io/basic-auth
+{{- end }}
+{{- if .Values.sonar.deploy.persistence_enabled  }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ template "pipeline-tools.name" . }}-data
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.sonar.deploy.sonarqube_persistent_volume_size }}
+status: {}
+{{- end }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  generation: 1
+  labels:
+    app: {{ template "pipeline-tools.name" . }}
+  name: {{ .Values.sonar.name }}
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      release: "{{ .Release.Name }}"
+      app: {{ template "pipeline-tools.name" . }}
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        openshift.io/generated-by: OpenShiftWebConsole
+      labels:
+        release: "{{ .Release.Name }}"
+        app: {{ template "pipeline-tools.name" . }}
+    spec:
+      containers:
+      - image: "image-registry.openshift-image-registry.svc:5000/{{ .Values.namespace }}/{{ .Values.sonar.name }}:latest"
+        env:
+{{- if .Values.sonar.deploy.postgres_enabled  }}
+        - name: JDBC_URL
+          value: jdbc:postgresql://sonardb:5432/sonar
+        - name: JDBC_USERNAME
+          valueFrom:
+            secretKeyRef:
+              key: database-user
+              name: sonardb
+        - name: JDBC_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: database-password
+              name: sonardb
+{{- else }}
+        - name: JDBC_URL
+          value: ''
+{{- end }}
+        - name: FORCE_AUTHENTICATION
+          value: "true"
+        - name: PROXY_HOST
+          value: {{ .Values.sonar.deploy.proxy_host }}
+        - name: PROXY_PORT
+          value: {{ .Values.sonar.deploy.proxy_port }}
+        - name: PROXY_USER
+          value: {{ .Values.sonar.deploy.proxy_user }}
+        - name: PROXY_PASSWORD
+          value: {{ .Values.sonar.deploy.proxy_password }}
+{{- if .Values.sonar.deploy.ldap_enabled  }}
+        - name: LDAP_URL
+          value: {{ .Values.sonar.deploy.sonar_ldap_url }}
+        - name: LDAP_REALM
+          value: {{ .Values.sonar.deploy.sonar_auth_realm }}
+        - name: LDAP_AUTHENTICATION
+          value: {{ .Values.sonar.deploy.sonar_ldap_bind_method }}
+        - name: LDAP_USER_BASEDN
+          value: {{ .Values.sonar.deploy.sonar_base_dn }}
+        - name: LDAP_USER_REAL_NAME_ATTR
+          value: {{ .Values.sonar.deploy.sonar_ldap_user_real_name_attr }}
+        - name: LDAP_USER_EMAIL_ATTR
+          value: {{ .Values.sonar.deploy.sonar_ldap_user_email_attr }}
+        - name: LDAP_USER_REQUEST
+          value: {{ .Values.sonar.deploy.sonar_ldap_user_request }}
+        - name: LDAP_GROUP_BASEDN
+          value: {{ .Values.sonar.deploy.sonar_ldap_group_basedn }}
+        - name: LDAP_GROUP_REQUEST
+          value: {{ .Values.sonar.deploy.sonar_ldap_group_request }}
+        - name: LDAP_GROUP_ID_ATTR
+          value: {{ .Values.sonar.deploy.sonar_ldap_group_id_attr }}
+        - name: LDAP_CONTEXTFACTORY
+          value: {{ .Values.sonar.deploy.sonar_ldap_contextfactory }}
+        - name: SONAR_AUTOCREATE_USERS
+          value: {{ .Values.sonar.deploy.sonar_autocreate_users }}
+        - name: LDAP_BINDDN
+          valueFrom:
+            secretKeyRef:
+              key: username
+              name: {{ template "pipeline-tools.name" . }}-ldap-bind-dn
+        - name: LDAP_BINDPASSWD
+          valueFrom:
+            secretKeyRef:
+              key: password
+              name: {{ template "pipeline-tools.name" . }}-ldap-bind-dn
+{{- else }}
+        - name: LDAP_REALM
+          value: ''
+{{- end }}
+        - name: SONAR_SEARCH_JAVA_ADDITIONAL_OPTS
+          value: '-Dnode.store.allow_mmapfs=false'
+        imagePullPolicy: Always
+        livenessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /
+            port: 9000
+            scheme: HTTP
+          initialDelaySeconds: 45
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 1
+        name: {{ template "pipeline-tools.name" . }}
+        ports:
+        - containerPort: 9000
+          protocol: TCP
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /
+            port: 9000
+            scheme: HTTP
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 1
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /opt/sonarqube/data
+          name: sonar-data
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      serviceAccount: {{ template "pipeline-tools.name" . }}
+      serviceAccountName: {{ template "pipeline-tools.name" . }}
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - name: sonar-data
+{{- if .Values.sonar.deploy.persistence_enabled  }}
+        persistentVolumeClaim:
+          claimName: sonarqube-data
+{{- else }}
+        emptyDir: {}
+{{- end }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: {{ template "pipeline-tools.name" . }}
+  name: {{ .Values.sonar.name }}
+  namespace: {{ .Values.namespace }}
+spec:
+  ports:
+  - name: 9000-tcp
+    port: 9000
+    protocol: TCP
+    targetPort: 9000
+  selector:
+    release: "{{ .Release.Name }}"
+    app: {{ template "pipeline-tools.name" . }}
+  sessionAffinity: None
+  type: ClusterIP
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  annotations:
+    serviceaccounts.openshift.io/oauth-redirectreference.sonarqube: '{"kind":"OAuthRedirectReference","apiVersion":"v1","reference":{"kind":"Route","name":"{{ .Values.sonar.name }}"}}'
+  name: {{ template "pipeline-tools.name" . }}
+  namespace: {{ .Values.namespace }}
+---
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: RoleBinding
+metadata:
+  name: sonarqube_view
+  namespace: {{ .Values.namespace }}
+roleRef:
+  kind: Role
+  name: view
+  apiGroup: rbac.authorization.k8s.io
+subjects:
+- kind: ServiceAccount
+  name: {{ template "pipeline-tools.name" . }}
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  labels:
+    app: {{ template "pipeline-tools.name" . }}
+  name: {{ .Values.sonar.name }}
+  namespace: {{ .Values.namespace }}
+spec:
+  port:
+    targetPort: 9000-tcp
+  tls:
+    termination: edge
+  to:
+    kind: Service
+    name: {{ .Values.sonar.name }}
+    weight: 100
+  wildcardPolicy: None
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  labels:
+    app: {{ template "pipeline-tools.name" . }}
+  name: "sonarqube-insecure"
+  namespace: {{ .Values.namespace }}
+spec:
+  port:
+    targetPort: 9000-tcp
+  to:
+    kind: Service
+    name: {{ .Values.sonar.name }}
+    weight: 100
+  wildcardPolicy: None
+{{- end }}
+
+
+

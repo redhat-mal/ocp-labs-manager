@@ -5,7 +5,7 @@ metadata:
   labels:
     app.kubernetes.io/name: {{ .Values.application_name }}
   name: {{ .Values.application_name }}
-  namespace: {{ .Values.build.namespace }}
+  namespace: {{ .Values.pipeline.namespace }}
 ---
 apiVersion: build.openshift.io/v1
 kind: BuildConfig
@@ -13,7 +13,7 @@ metadata:
   labels:
     app.kubernetes.io/name: {{ .Values.application_name }}
   name: {{ .Values.application_name }}
-  namespace: {{ .Values.build.namespace }}
+  namespace: {{ .Values.pipeline.namespace }}
 spec:
   failedBuildsHistoryLimit: 5
   output:
@@ -30,7 +30,7 @@ spec:
     sourceStrategy:
       from:
         kind: ImageStreamTag
-        name: {{ .Values.build.image_stream_name }}
-        namespace: {{ .Values.build.image_stream_namespace }}
+        name: {{ .Values.pipeline.image_stream_name }}
+        namespace: {{ .Values.pipeline.image_stream_namespace }}
     type: Source
   successfulBuildsHistoryLimit: 5

@@ -1,0 +1,17 @@
+{{- $root := . -}}
+{{- range $namespaces := .Values.argocd.projects }}
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: {{ $root.Values.namespace }}-argocd-role
+  namespace: {{ $namespaces.name }}
+subjects:
+  - kind: ServiceAccount
+    name: argocd-application-controller
+    namespace: {{ $root.Values.namespace }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: admin
+{{- end }}
