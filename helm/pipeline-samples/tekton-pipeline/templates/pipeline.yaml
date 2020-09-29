@@ -4,7 +4,7 @@ kind: ServiceAccount
 metadata:
   labels:
     app.kubernetes.io/name: {{ .Values.application_name }}
-  name: {{ .Values.build.service_account }}
+  name: {{ .Release.Name }}-sa
   namespace: {{ .Values.build.namespace }}
 ---
 apiVersion: rbac.authorization.k8s.io/v1
@@ -12,7 +12,7 @@ kind: RoleBinding
 metadata:
   labels:
     app.kubernetes.io/name: {{ .Values.application_name }}
-  name: {{ .Values.build.service_account }}_edit
+  name: {{ .Release.Name }}-sa_edit
   namespace: {{ .Values.build.namespace }}
 roleRef:
   apiGroup: rbac.authorization.k8s.io
@@ -20,14 +20,14 @@ roleRef:
   name: edit
 subjects:
 - kind: ServiceAccount
-  name: {{ .Values.build.service_account }}
+  name: {{ .Release.Name }}-sa
 ---
 apiVersion: tekton.dev/v1alpha1
 kind: PipelineResource
 metadata:
   labels:
     app.kubernetes.io/name: {{ .Values.application_name }}
-  name: {{ .Values.application_name }}-image
+  name: {{ .Release.Name }}-image
   namespace: {{ .Values.build.namespace }}
 spec:
   type: image
@@ -40,7 +40,7 @@ kind: PipelineResource
 metadata:
   labels:
     app.kubernetes.io/name: {{ .Values.application_name }}
-  name: {{ .Values.application_name }}-git
+  name: {{ .Release.Name }}-git
   namespace: {{ .Values.build.namespace }}
 spec:
   type: git
@@ -70,13 +70,6 @@ spec:
     - /usr/bin/mvn
     args:
     - package
-  - name: run-test
-    image: maven:3.6.0-jdk-8-slim
-    workingDir: /workspace/source
-    command:
-    - /usr/bin/mvn
-    args:
-    - test
   - name: make-upload-dir
     image: quay.io/openshift-pipeline/openshift-cli:latest
     command: ["mkdir"]
@@ -87,19 +80,26 @@ spec:
     image: quay.io/openshift-pipeline/openshift-cli:latest
     command: ["cp"]
     args:
-      - /workspace/source/target/shift-rest-1.0.0-SNAPSHOT.jar
+      - /workspace/source/target/{{ .Values.build.resource_name }}
       - /workspace/source/upload
+        #  - name: run-test
+        #image: maven:3.6.0-jdk-8-slim
+        #workingDir: /workspace/source
+        #command:
+        #- /usr/bin/mvn
+        #args:
+        #- test
   - name: oc-binary-build
     image: quay.io/openshift-pipeline/openshift-cli:latest
     command: ["/usr/local/bin/oc"]
     workingDir: /workspace/source/upload
     args:
-      - start-build
-      - -w
-      - -F
-      - {{ .Values.application_name }}
-      - --from-dir
-      - "."
+    - start-build
+    - -w
+    - -F
+    - {{ .Values.application_name }}
+    - --from-dir
+    - "."
 ---
 apiVersion: tekton.dev/v1beta1
 kind: Task
@@ -145,11 +145,11 @@ kind: Pipeline
 metadata:
   labels:
     app.kubernetes.io/name: {{ .Values.application_name }}
-  name: {{ .Values.application_name }}-pipeline
+  name: {{ .Release.Name }}-pipeline
   namespace: {{ .Values.build.namespace }}
 spec:
   resources:
-  - name: {{ .Values.application_name }}-git
+  - name: {{ .Release.Name }}-git
     type: git
   tasks:
   - name: build-image
@@ -158,4 +158,4 @@ spec:
     resources:
       inputs:
       - name: source
-        resource: {{ .Values.application_name }}-git
+        resource: {{ .Release.Name }}-git

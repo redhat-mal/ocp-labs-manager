@@ -3,14 +3,18 @@
 # Declare variables to be passed into your templates.
 
 
-application_name: spring-boot-demo
+application_name: spring-rest-app
+application_tag: latest
 
 build:
   image_stream_namespace: openshift
-  namespace: att-dev
-  image_stream_name: redhat-openjdk18-openshift:1.8
-  source_repo: https://github.com/redhat-cop/spring-rest.git 
+  namespace: att-demo
+  image_stream_name: openjdk-8-rhel8:1.2
+  source_repo: https://github.com/malacourse/spring-rest.git
   source_ref: master
   source_context_dir: basic-spring-boot
-  service_account: pipeline
+  webhook_secret_key: ATT_DEMO_KEY
+  webhook_secret_val: foo-bar-123
+  resource_name: spring-rest-1.0.0.jar
+  
 

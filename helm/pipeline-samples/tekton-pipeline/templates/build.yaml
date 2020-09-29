@@ -15,10 +15,14 @@ metadata:
   name: {{ .Values.application_name }}
   namespace: {{ .Values.build.namespace }}
 spec:
+  failedBuildsHistoryLimit: 5
   output:
     to:
       kind: ImageStreamTag
-      name: {{ .Values.application_name }}:latest
+      name: {{ .Values.application_name }}:{{ .Values.application_tag }}
+  postCommit: {}
+  resources: {}
+  runPolicy: Serial
   source:
     binary: {}
     type: Binary
@@ -29,3 +33,4 @@ spec:
         name: {{ .Values.build.image_stream_name }}
         namespace: {{ .Values.build.image_stream_namespace }}
     type: Source
+  successfulBuildsHistoryLimit: 5
