@@ -1,9 +1,15 @@
 # Default values for app-deployment.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
+
 namespace: att-demo
+argocd_namespace: labs-cicd
 
 replicaCount: 1
+
+triggers:
+    config: false
+    image: true
  
 application_image_name: image-registry.openshift-image-registry.svc:5000/att-dev/spring-boot-demo  
 application_image_tag: latest
