@@ -4,6 +4,7 @@ metadata:
   labels:
     app.kubernetes.io/name: {{ .Release.Name }}
   name: {{ .Release.Name }}
+  namespace: {{ .Values.namespace }}
   annotations:
 spec:
   replicas: {{ .Values.replicas }}
