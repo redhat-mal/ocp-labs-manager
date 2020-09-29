@@ -61,7 +61,6 @@ spec:
               value: "8888"
             - name: AUTO_DEPLOY_EXPLODED
               value: "false"
-          image: {{ .Release.Name }}:{{ .Values.application_image_tag }}
           imagePullPolicy: Always
           livenessProbe: 
           readinessProbe: 
@@ -89,7 +88,7 @@ spec:
     imageChangeParams:
       automatic: true
       containerNames:
-      - nodejs-ex-git
+      - {{ .Release.Name }}
       from:
         kind: ImageStreamTag
         namespace: {{ .Values.namespace }}
