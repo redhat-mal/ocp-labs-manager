@@ -164,7 +164,7 @@ spec:
     type: array
     default: ["package"]
   resources:
-    input:
+    inputs:
     - name: source
       type: git
   steps:
@@ -194,7 +194,7 @@ spec:
     - name: SONAR_URL
       default: ""
   resources:
-    input:
+    inputs:
     - name: source
       type: git
     #results:
