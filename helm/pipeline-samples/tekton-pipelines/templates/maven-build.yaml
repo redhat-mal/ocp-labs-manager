@@ -48,7 +48,7 @@ spec:
       type: string
       default: pipeline-sample-app
   resources:
-  - name: maven-build-binary-build-git
+  - name: maven-build-image-pipeline-git
     type: git
   tasks:
   - name: compile
@@ -65,7 +65,7 @@ spec:
     resources:
       inputs:
       - name: source
-        resource: maven-build-binary-build-git
+        resource: maven-build-image-pipeline-git
   - name: unit-test
     taskRef:
       name: mvn
@@ -82,7 +82,7 @@ spec:
     resources:
       inputs:
       - name: source
-        resource: maven-build-binary-build-git
+        resource: maven-build-image-pipeline-git
   - name: sonar-scan
     taskRef:
       name: sonar-scan
@@ -99,7 +99,7 @@ spec:
     resources:
       inputs:
       - name: source
-        resource: maven-build-binary-build-git
+        resource: maven-build-image-pipeline-git
     runAfter:
     - unit-test
   - name: build-image
@@ -115,7 +115,7 @@ spec:
     resources:
       inputs:
       - name: source
-        resource: maven-build-binary-build-git
+        resource: maven-build-image-pipeline-git
     runAfter:
     - sonar-scan
 
