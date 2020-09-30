@@ -1,63 +1,72 @@
 ---
-apiVersion: v1
-kind: ServiceAccount
+apiVersion: tekton.dev/v1beta1
+kind: Task
 metadata:
   labels:
-    app.kubernetes.io/name: {{ .Values.application_name }}
-  name: {{ .Release.Name }}-sa
-  namespace: {{ .Values.pipeline.namespace }}
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: RoleBinding
-metadata:
-  labels:
-    app.kubernetes.io/name: {{ .Values.application_name }}
-  name: {{ .Release.Name }}-sa_edit
-  namespace: {{ .Values.pipeline.namespace }}
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: ClusterRole
-  name: edit
-subjects:
-- kind: ServiceAccount
-  name: {{ .Release.Name }}-sa
----
-apiVersion: tekton.dev/v1alpha1
-kind: PipelineResource
-metadata:
-  labels:
-    app.kubernetes.io/name: {{ .Values.application_name }}
-  name: {{ .Release.Name }}-image
+    app.kubernetes.io/name: {{ .Release.Name }}
+  name: promote-image
   namespace: {{ .Values.pipeline.namespace }}
 spec:
-  type: image
   params:
-  - name: url
-    value: image-registry.openshift-image-registry.svc:5000/{{ .Values.pipeline.namespace }}/{{ .Values.application_name }}
----
-apiVersion: tekton.dev/v1alpha1
-kind: PipelineResource
-metadata:
-  labels:
-    app.kubernetes.io/name: {{ .Values.application_name }}
-  name: {{ .Release.Name }}-git
-  namespace: {{ .Values.pipeline.namespace }}
-spec:
-  type: git
-  params:
-  - name: url
-    value: {{ .Values.pipeline.source_repo }}
-  - name: revision
-    value: {{ .Values.pipeline.source_ref }}
+    - name: fromNamespace
+      description: The namespace we are tagging from
+    - name: toNamespace
+      description: The namespace we are tagging to
+    - name: tag
+      description: The image tag
+      default: latest
+    - name: appName
+      description: The application name
+  steps:
+  - name: oc-tag-image
+    image: quay.io/openshift-pipeline/openshift-cli:latest
+    command: ["/usr/local/bin/oc"]
+    workingDir: /workspace/source/upload
+    args:
+    - tag
+    - $(params.fromNamespace)/$(params.appName):latest
+    - $(params.toNamespace)/$(params.appName):latest
 ---
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   labels:
-    app.kubernetes.io/name: {{ .Values.application_name }}
+    app.kubernetes.io/name: {{ .Release.Name }}
+  name: functional-test
+  namespace: {{ .Values.pipeline.namespace }}
+spec:
+  params:
+    - name: appResultValue
+      description: The expected value
+    - name: appUrl
+      description: The url to curl
+  steps:
+  - name: verify-url
+    image: quay.io/openshift-pipeline/openshift-cli:latest
+    command: ["/usr/local/bin/oc"]
+    workingDir: /workspace/source
+    args:
+    - get 
+    - pods
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  labels:
+    app.kubernetes.io/name: {{ .Release.Name }}
   name: maven-build-binary-build
   namespace: {{ .Values.pipeline.namespace }}
 spec:
+  params:
+    - name: fromNamespace
+      description: The namespace we are tagging from
+    - name: toNamespace
+      description: The namespace we are tagging to
+    - name: tag
+      description: The image tag
+      default: latest
+    - name: appName
+      description: The application name
   resources:
     inputs:
     - name: source
@@ -90,7 +99,7 @@ spec:
     - start-build
     - -w
     - -F
-    - {{ .Values.application_name }}
+    - $(params.appName)
     - --from-dir
     - "."
   - name: oc-tag-image
@@ -99,14 +108,14 @@ spec:
     workingDir: /workspace/source/upload
     args:
     - tag
-    - {{ .Values.pipeline.namespace }}/{{ .Values.application_name }}:latest
-    - {{ .Values.application_stage_namespace }}/{{ .Values.application_name }}:latest
+    - $(params.fromNamespace)/$(params.appName):latest
+    - $(params.toNamespace)/$(params.appName):latest
 ---
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   labels:
-    app.kubernetes.io/name: {{ .Values.application_name }}
+    app.kubernetes.io/name: {{ .Release.Name }}
   name: repo-update
   namespace: {{ .Values.pipeline.namespace }}
 spec:
@@ -117,6 +126,7 @@ spec:
       description: The namespace we are tagging to
     - name: tag
       description: The image tag
+      default: latest
     - name: imageStream
       description: The imageStream
     - name: deploymentResource
@@ -211,90 +221,4 @@ spec:
       - "-Dsonar.login=$(inputs.params.SONAR_USER)"
       - "-Dsonar.password=$(inputs.params.SONAR_PASSWORD)" 
       - "-Dsonar.host.url=$(inputs.params.SONAR_URL)"
----
-apiVersion: tekton.dev/v1beta1
-kind: Pipeline
-metadata:
-  labels:
-    app.kubernetes.io/name: {{ .Values.application_name }}
-  name: {{ .Release.Name }}-pipeline
-  namespace: {{ .Values.pipeline.namespace }}
-spec:
-  workspaces:
-  - name: local-tssc-repo
-  params:
-    - name: SONAR_URL
-      type: string
-      description: Sonar Url
-      default: http://sonarqube:9000
-    - name: SONAR_USER
-      type: string
-      default: admin
-    - name: SONAR_PASSWORD
-      type: string
-      default: admin
-  resources:
-  - name: {{ .Release.Name }}-git
-    type: git
-  tasks:
-  - name: compile
-    taskRef:
-      name: mvn
-      kind: Task
-    workspaces:
-    - name: maven-repo
-      workspace: local-tssc-repo
-    params:
-      - name: GOALS
-        value:
-        - "compile"
-    resources:
-      inputs:
-      - name: source
-        resource: {{ .Release.Name }}-git
-  - name: unit-test
-    taskRef:
-      name: mvn
-      kind: Task
-    workspaces:
-    - name: maven-repo
-      workspace: local-tssc-repo
-    runAfter:
-    - compile
-    params:
-      - name: GOALS
-        value: 
-        - "test"
-    resources:
-      inputs:
-      - name: source
-        resource: {{ .Release.Name }}-git
-  - name: sonar-scan
-    taskRef:
-      name: sonar-scan
-    workspaces:
-    - name: maven-repo
-      workspace: local-tssc-repo
-    params:
-    - name: SONAR_USER
-      value: "$(params.SONAR_USER)"
-    - name: SONAR_PASSWORD
-      value: "$(params.SONAR_PASSWORD)"
-    - name: SONAR_URL
-      value: "$(params.SONAR_URL)"
-    resources:
-      inputs:
-      - name: source
-        resource: {{ .Release.Name }}-git
-    runAfter:
-    - unit-test
-  - name: build-image
-    taskRef:
-      name: maven-build-binary-build
-    resources:
-      inputs:
-      - name: source
-        resource: {{ .Release.Name }}-git
-    runAfter:
-    - sonar-scan
 

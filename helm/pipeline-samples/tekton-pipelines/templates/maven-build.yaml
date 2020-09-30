@@ -1,0 +1,121 @@
+---
+apiVersion: tekton.dev/v1alpha1
+kind: PipelineResource
+metadata:
+  labels:
+    app.kubernetes.io/name: {{ .Values.application_name }}
+  name: {{ .Release.Name }}-image
+  namespace: {{ .Values.pipeline.namespace }}
+spec:
+  type: image
+  params:
+  - name: url
+    value: image-registry.openshift-image-registry.svc:5000/{{ .Values.pipeline.namespace }}/{{ .Values.application_name }}
+---
+apiVersion: tekton.dev/v1alpha1
+kind: PipelineResource
+metadata:
+  labels:
+    app.kubernetes.io/name: {{ .Values.application_name }}
+  name: {{ .Release.Name }}-git
+  namespace: {{ .Values.pipeline.namespace }}
+spec:
+  type: git
+  params:
+  - name: url
+    value: {{ .Values.pipeline.source_repo }}
+  - name: revision
+    value: {{ .Values.pipeline.source_ref }}
+---
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  labels:
+    app.kubernetes.io/name: {{ .Values.application_name }}
+  name: {{ .Release.Name }}-pipeline
+  namespace: {{ .Values.pipeline.namespace }}
+spec:
+  workspaces:
+  - name: local-tssc-repo
+  params:
+    - name: NAMESPACE_TO
+      type: string
+      default: att-stage
+    - name: NAMESPACE_FROM
+      type: string
+      default: att-demo
+    - name: APP_NAME
+      type: string
+      default: pipeline-sample-app
+  resources:
+  - name: {{ .Release.Name }}-git
+    type: git
+  tasks:
+  - name: compile
+    taskRef:
+      name: mvn
+      kind: Task
+    workspaces:
+    - name: maven-repo
+      workspace: local-tssc-repo
+    params:
+      - name: GOALS
+        value:
+        - "compile"
+    resources:
+      inputs:
+      - name: source
+        resource: {{ .Release.Name }}-git
+  - name: unit-test
+    taskRef:
+      name: mvn
+      kind: Task
+    workspaces:
+    - name: maven-repo
+      workspace: local-tssc-repo
+    runAfter:
+    - compile
+    params:
+      - name: GOALS
+        value: 
+        - "test"
+    resources:
+      inputs:
+      - name: source
+        resource: {{ .Release.Name }}-git
+  - name: sonar-scan
+    taskRef:
+      name: sonar-scan
+    workspaces:
+    - name: maven-repo
+      workspace: local-tssc-repo
+    params:
+    - name: SONAR_USER
+      value: "{{ .Values.sonar.username }}"
+    - name: SONAR_PASSWORD
+      value: "{{ .Values.sonar.password }}"
+    - name: SONAR_URL
+      value: "{{ .Values.sonar.route }}"
+    resources:
+      inputs:
+      - name: source
+        resource: {{ .Release.Name }}-git
+    runAfter:
+    - unit-test
+  - name: build-image
+    params:
+    - name: toNamespace
+      value: "$(params.NAMESPACE_TO)"
+    - name: fromNamespace
+      value: "$(params.NAMESPACE_FROM)"
+    - name: appName
+      value: "$(params.APP_NAME)"
+    taskRef:
+      name: maven-build-binary-build
+    resources:
+      inputs:
+      - name: source
+        resource: {{ .Release.Name }}-git
+    runAfter:
+    - sonar-scan
+

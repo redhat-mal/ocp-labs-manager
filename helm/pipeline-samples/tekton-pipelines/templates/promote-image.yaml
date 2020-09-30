@@ -1,0 +1,51 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  labels:
+    app.kubernetes.io/name: {{ .Values.application_name }}
+  name: test-and-promote-pipeline
+  namespace: {{ .Values.pipeline.namespace }}
+spec:
+  workspaces:
+  - name: local-tssc-repo
+  params:
+    - name: NAMESPACE_TO
+      type: string
+      default: att-stage
+    - name: NAMESPACE_FROM
+      type: string
+      default: att-demo
+    - name: APP_NAME
+      type: string
+      default: pipeline-sample-app
+    - name: TEST_ROUTE
+      type: string
+    - name: TEST_RESULT
+      type: string
+  resources:
+  - name: {{ .Release.Name }}-git
+    type: git
+  tasks:
+  - name: functional-test
+    taskRef:
+      name: functional-test
+      kind: Task
+    params:
+      - name: appUrl
+        value: "$(params.TEST_ROUTE)"
+      - name: appResultValue
+        value: "$(params.TEST_RESULT)"
+  - name: promote-image
+    params:
+    - name: toNamespace
+      value: "$(params.NAMESPACE_TO)"
+    - name: fromNamespace
+      value: "$(params.NAMESPACE_FROM)"
+    - name: appName
+      value: "$(params.APP_NAME)"
+    taskRef:
+      name: promote-image
+    runAfter:
+    - functional-test
+
