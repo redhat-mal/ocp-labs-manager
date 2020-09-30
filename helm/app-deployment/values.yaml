@@ -3,7 +3,6 @@
 # Declare variables to be passed into your templates.
 
 namespace: att-demo
-argocd_namespace: labs-cicd
 
 replicaCount: 1
 
@@ -68,4 +67,21 @@ probes:
       - /opt/eap/bin/livenessProbe.sh
       initialDelaySeconds: 90
     timeoutSeconds: 10
+
+application_name: spring-rest-app
+application_tag: latest
+application_stage_namespace: att-stage
+application_dev_namespace: att-demo
+
+pipeline:
+  deploy: false
+  namespace: labs-cicd
+  image_stream_namespace: openshift
+  image_stream_name: openjdk-8-rhel8:1.2
+  source_repo: https://github.com/malacourse/spring-rest.git
+  source_ref: master
+  source_context_dir: basic-spring-boot
+  resource_name: spring-rest-1.0.0.jar
+
+
 

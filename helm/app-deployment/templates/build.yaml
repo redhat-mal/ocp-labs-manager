@@ -1,0 +1,38 @@
+{{- if .Values.pipeline.deploy }}
+---
+apiVersion: image.openshift.io/v1
+kind: ImageStream
+metadata:
+  labels:
+    app.kubernetes.io/name: {{ .Values.application_name }}
+  name: {{ .Values.application_name }}
+  namespace: {{ .Values.namespace }}
+---
+apiVersion: build.openshift.io/v1
+kind: BuildConfig
+metadata:
+  labels:
+    app.kubernetes.io/name: {{ .Values.application_name }}
+  name: {{ .Values.application_name }}
+  namespace: {{ .Values.namespace }}
+spec:
+  failedBuildsHistoryLimit: 5
+  output:
+    to:
+      kind: ImageStreamTag
+      name: {{ .Values.application_name }}:{{ .Values.application_tag }}
+  postCommit: {}
+  resources: {}
+  runPolicy: Serial
+  source:
+    binary: {}
+    type: Binary
+  strategy:
+    sourceStrategy:
+      from:
+        kind: ImageStreamTag
+        name: {{ .Values.pipeline.image_stream_name }}
+        namespace: {{ .Values.pipeline.image_stream_namespace }}
+    type: Source
+  successfulBuildsHistoryLimit: 5
+{{- end }}  
