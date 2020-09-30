@@ -158,13 +158,12 @@ metadata:
 spec:
   workspaces:
   - name: maven-repo
-  inputs:
-    params:
-    - name: GOALS
-      description: The Maven goals to run
-      type: array
-      default: ["package"]
-    resources:
+  params:
+  - name: GOALS
+    description: The Maven goals to run
+    type: array
+    default: ["package"]
+  resources:
     - name: source
       type: git
   steps:
@@ -183,18 +182,17 @@ metadata:
 spec:
   workspaces:
   - name: maven-repo
-  inputs:
-    params:
-      - name: POM_FILE
-        description: The pom file to process
-        default: ./pom.xml
-      - name: SONAR_USER
-        default: "admin"
-      - name: SONAR_PASSWORD
-        default: "admin"
-      - name: SONAR_URL
-        default: ""
-    resources:
+  params:
+    - name: POM_FILE
+      description: The pom file to process
+      default: ./pom.xml
+    - name: SONAR_USER
+      default: "admin"
+    - name: SONAR_PASSWORD
+      default: "admin"
+    - name: SONAR_URL
+      default: ""
+  resources:
     - name: source
       type: git
     #results:
