@@ -1,37 +1,37 @@
----
-apiVersion: tekton.dev/v1alpha1
-kind: PipelineResource
-metadata:
-  labels:
-    app.kubernetes.io/name: {{ .Values.application_name }}
-  name: {{ .Release.Name }}-image
-  namespace: {{ .Values.pipeline.namespace }}
-spec:
-  type: image
-  params:
-  - name: url
-    value: image-registry.openshift-image-registry.svc:5000/{{ .Values.pipeline.namespace }}/{{ .Values.application_name }}
----
-apiVersion: tekton.dev/v1alpha1
-kind: PipelineResource
-metadata:
-  labels:
-    app.kubernetes.io/name: {{ .Values.application_name }}
-  name: {{ .Release.Name }}-git
-  namespace: {{ .Values.pipeline.namespace }}
-spec:
-  type: git
-  params:
-  - name: url
-    value: {{ .Values.pipeline.source_repo }}
-  - name: revision
-    value: {{ .Values.pipeline.source_ref }}
+#---
+#apiVersion: tekton.dev/v1alpha1
+#kind: PipelineResource
+#metadata:
+#  labels:
+#    app.kubernetes.io/name: {{ .Values.application_name }}
+#  name: {{ .Release.Name }}-image
+#  namespace: {{ .Values.pipeline.namespace }}
+#spec:
+#  type: image
+#  params:
+#  - name: url
+#    value: image-registry.openshift-image-registry.svc:5000/{{ .Values.pipeline.namespace }}/{{ .Values.application_name }}
+#---
+#apiVersion: tekton.dev/v1alpha1
+#kind: PipelineResource
+#metadata:
+#  labels:
+#    app.kubernetes.io/name: {{ .Values.application_name }}
+#  name: {{ .Release.Name }}-git
+#  namespace: {{ .Values.pipeline.namespace }}
+#spec:
+#  type: git
+#  params:
+#  - name: url
+#    value: {{ .Values.pipeline.source_repo }}
+#  - name: revision
+#    value: {{ .Values.pipeline.source_ref }}
 ---
 apiVersion: tekton.dev/v1beta1
 kind: Pipeline
 metadata:
   labels:
-    app.kubernetes.io/name: {{ .Values.application_name }}
+    app.kubernetes.io/name: {{ .Release.Name }}
   name: maven-build-image-pipeline
   namespace: {{ .Values.pipeline.namespace }}
 spec:
