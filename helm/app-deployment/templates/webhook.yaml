@@ -47,7 +47,7 @@ spec:
           - name: imageTag
             value: $(params.gitrevision)
         resources:
-          - name: {{ .Release.Name }}-git
+          - name: {{ .values.pipeline.name }}-git
             resourceRef:
               name: {{ .Release.Name }}-git-$(uid)
         workspaces:
