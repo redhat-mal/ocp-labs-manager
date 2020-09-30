@@ -4,7 +4,7 @@
 #metadata:
 #  labels:
 #    app.kubernetes.io/name: {{ .Values.application_name }}
-#  name: {{ .Release.Name }}-image
+#  name: maven-build-binary-build-image
 #  namespace: {{ .Values.pipeline.namespace }}
 #spec:
 #  type: image
@@ -17,7 +17,7 @@
 #metadata:
 #  labels:
 #    app.kubernetes.io/name: {{ .Values.application_name }}
-#  name: {{ .Release.Name }}-git
+#  name: maven-build-binary-build-git
 #  namespace: {{ .Values.pipeline.namespace }}
 #spec:
 #  type: git
@@ -31,7 +31,7 @@ apiVersion: tekton.dev/v1beta1
 kind: Pipeline
 metadata:
   labels:
-    app.kubernetes.io/name: {{ .Release.Name }}
+    app.kubernetes.io/name: maven-build-binary-build
   name: maven-build-image-pipeline
   namespace: {{ .Values.pipeline.namespace }}
 spec:
@@ -48,7 +48,7 @@ spec:
       type: string
       default: pipeline-sample-app
   resources:
-  - name: {{ .Release.Name }}-git
+  - name: maven-build-binary-build-git
     type: git
   tasks:
   - name: compile
@@ -65,7 +65,7 @@ spec:
     resources:
       inputs:
       - name: source
-        resource: {{ .Release.Name }}-git
+        resource: maven-build-binary-build-git
   - name: unit-test
     taskRef:
       name: mvn
@@ -82,7 +82,7 @@ spec:
     resources:
       inputs:
       - name: source
-        resource: {{ .Release.Name }}-git
+        resource: maven-build-binary-build-git
   - name: sonar-scan
     taskRef:
       name: sonar-scan
@@ -99,7 +99,7 @@ spec:
     resources:
       inputs:
       - name: source
-        resource: {{ .Release.Name }}-git
+        resource: maven-build-binary-build-git
     runAfter:
     - unit-test
   - name: build-image
@@ -115,7 +115,7 @@ spec:
     resources:
       inputs:
       - name: source
-        resource: {{ .Release.Name }}-git
+        resource: maven-build-binary-build-git
     runAfter:
     - sonar-scan
 
