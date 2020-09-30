@@ -32,7 +32,7 @@ kind: Pipeline
 metadata:
   labels:
     app.kubernetes.io/name: {{ .Values.application_name }}
-  name: {{ .Release.Name }}-pipeline
+  name: maven-build-image-pipeline
   namespace: {{ .Values.pipeline.namespace }}
 spec:
   workspaces:
