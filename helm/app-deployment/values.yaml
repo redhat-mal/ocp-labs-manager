@@ -78,6 +78,7 @@ pipeline:
   deploy: false
   name: maven-build-image-pipeline
   namespace: att-pipelines
+  service_account: att-pipelines-sa
   source_repo: https://github.com/malacourse/spring-rest.git
   source_ref: master
   source_context_dir: basic-spring-boot
