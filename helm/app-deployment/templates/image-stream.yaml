@@ -3,7 +3,7 @@ kind: ImageStream
 apiVersion: image.openshift.io/v1
 metadata:
   name: {{ .Values.application_name }}
-  namespace: {{ .Values.pipeline.namespace }}
+  namespace: {{ .Values.namespace }}
   labels:
     app: {{ .Release.Name }}
     app.kubernetes.io/name: {{ .Release.Name }}
