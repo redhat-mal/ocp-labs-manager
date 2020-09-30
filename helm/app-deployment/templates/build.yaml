@@ -4,16 +4,16 @@ apiVersion: image.openshift.io/v1
 kind: ImageStream
 metadata:
   labels:
-    app.kubernetes.io/name: {{ .Values.application_name }}
-  name: {{ .Values.application_name }}
+    app.kubernetes.io/name: {{ .Release.Name }}
+  name: {{.Release.Name }}
   namespace: {{ .Values.namespace }}
 ---
 apiVersion: build.openshift.io/v1
 kind: BuildConfig
 metadata:
   labels:
-    app.kubernetes.io/name: {{ .Values.application_name }}
-  name: {{ .Values.application_name }}
+    app.kubernetes.io/name: {{.Release.Name }}
+  name: {{.Release.Name }}
   namespace: {{ .Values.namespace }}
 spec:
   failedBuildsHistoryLimit: 5
