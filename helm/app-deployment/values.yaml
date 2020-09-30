@@ -10,9 +10,6 @@ triggers:
     config: false
     image: true
  
-application_image_name: image-registry.openshift-image-registry.svc:5000/att-dev/spring-boot-demo  
-application_image_tag: latest
-
 ## Create a route so the application can be access from outside the OCP cluster?
 createRoute: true
 ## Hostname of the OpenShift route. If left blank, a hostname will be automatically generated in the form <release-name>-<namespace>.<suffix>
@@ -68,10 +65,8 @@ probes:
       initialDelaySeconds: 90
     timeoutSeconds: 10
 
-application_name: spring-rest-app
+#application_name: spring-rest-app
 application_tag: latest
-application_stage_namespace: att-stage
-application_dev_namespace: att-demo
 
 build:
   namespace: labs-cicd
@@ -81,6 +76,7 @@ build:
 
 pipeline:
   deploy: false
+  name: maven-build-image-pipeline
   namespace: att-pipelines
   source_repo: https://github.com/malacourse/spring-rest.git
   source_ref: master

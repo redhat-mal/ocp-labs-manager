@@ -40,11 +40,11 @@ spec:
             serviceAccountName: {{ .Release.Name }}-sa
         params:
           - name: TO_NAMESPACE
-            value: {{ .Values.application_stage_namespace}}
+            value: {{ .Values.namespace}}
           - name: FROM_NAMESPACE
-            value: {{ .Values.application_dev_namespace }}
+            value: {{ .Values.build.namespace }}
           - name: APP_NAME
-            value: {{ .Values.application_name }}
+            value: {{ .Release.Name }}
           - name: imageTag
             value: $(params.gitrevision)
         resources:

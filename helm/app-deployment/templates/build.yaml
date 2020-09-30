@@ -5,7 +5,7 @@ kind: ImageStream
 metadata:
   labels:
     app.kubernetes.io/name: {{ .Release.Name }}
-  name: {{.Values.application_name }}
+  name: {{.Release.Name }}
   namespace: {{ .Values.build.namespace }}
 ---
 apiVersion: build.openshift.io/v1
@@ -20,7 +20,7 @@ spec:
   output:
     to:
       kind: ImageStreamTag
-      name: {{ .Values.application_name }}:{{ .Values.application_tag }}
+      name: {{ .Release.Name }}:{{ .Values.application_tag }}
   postCommit: {}
   resources: {}
   runPolicy: Serial
