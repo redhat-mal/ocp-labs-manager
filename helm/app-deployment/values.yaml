@@ -73,11 +73,15 @@ application_tag: latest
 application_stage_namespace: att-stage
 application_dev_namespace: att-demo
 
-pipeline:
-  deploy: false
+build:
   namespace: labs-cicd
   image_stream_namespace: openshift
   image_stream_name: openjdk-8-rhel8:1.2
+  resource_name: spring-rest-1.0.0.jar
+
+pipeline:
+  deploy: false
+  namespace: att-pipelines
   source_repo: https://github.com/malacourse/spring-rest.git
   source_ref: master
   source_context_dir: basic-spring-boot

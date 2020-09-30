@@ -4,7 +4,7 @@ apiVersion: triggers.tekton.dev/v1alpha1
 kind: TriggerTemplate
 metadata:
   name: {{ .Release.Name }}-build-triggertemplate
-  namespace: {{ .Values.pipeline.namespace }}
+  namespace: {{ .Values.build.namespace }}
 spec:
   params:
     - name: gitrevision
@@ -33,7 +33,8 @@ spec:
         name: {{ .Release.Name }}-build-pipeline-run-$(uid)
       spec:
         pipelineRef:
-          name: {{ .Release.Name }}-pipeline
+          name: {{ .Values.pipeline.name }}
+          namespace: {{ .Values.pipeline.namespace }}
         serviceAccountNames:
           - taskName: build-image
             serviceAccountName: {{ .Release.Name }}-sa
@@ -60,7 +61,7 @@ apiVersion: triggers.tekton.dev/v1alpha1
 kind: TriggerBinding
 metadata:
   name: {{ .Release.Name }}-pipelinebinding
-  namespace: {{ .Values.pipeline.namespace }}
+  namespace: {{ .Values.build.namespace }}
 spec:
   params:
     - name: gitrevision
@@ -72,7 +73,7 @@ apiVersion: triggers.tekton.dev/v1alpha1
 kind: EventListener
 metadata:
   name: {{ .Release.Name }}-webhook
-  namespace: {{ .Values.pipeline.namespace }}
+  namespace: {{ .Values.build.namespace }}
 spec:
   serviceAccountName: {{ .Release.Name }}-sa
   triggers:
@@ -89,7 +90,7 @@ metadata:
     app.kubernetes.io/part-of: Triggers
     eventlistener: {{ .Release.Name }}-webhook
   name: webhook-{{ .Release.Name }}
-  namespace: {{ .Values.pipeline.namespace }}
+  namespace: {{ .Values.build.namespace }}
 spec:
   port:
     targetPort: http-listener

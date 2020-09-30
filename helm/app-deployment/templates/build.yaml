@@ -6,7 +6,7 @@ metadata:
   labels:
     app.kubernetes.io/name: {{ .Release.Name }}
   name: {{.Values.application_name }}
-  namespace: {{ .Values.pipeline.namespace }}
+  namespace: {{ .Values.build.namespace }}
 ---
 apiVersion: build.openshift.io/v1
 kind: BuildConfig
@@ -14,7 +14,7 @@ metadata:
   labels:
     app.kubernetes.io/name: {{.Release.Name }}
   name: {{.Release.Name }}
-  namespace: {{ .Values.pipeline.namespace }}
+  namespace: {{ .Values.build.namespace }}
 spec:
   failedBuildsHistoryLimit: 5
   output:
