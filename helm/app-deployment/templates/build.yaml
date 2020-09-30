@@ -31,8 +31,8 @@ spec:
     sourceStrategy:
       from:
         kind: ImageStreamTag
-        name: {{ .Values.pipeline.image_stream_name }}
-        namespace: {{ .Values.pipeline.image_stream_namespace }}
+        name: {{ .Values.build.image_stream_name }}
+        namespace: {{ .Values.build.image_stream_namespace }}
     type: Source
   successfulBuildsHistoryLimit: 5
 {{- end }}  
