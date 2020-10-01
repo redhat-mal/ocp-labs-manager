@@ -100,6 +100,8 @@ spec:
     - -w
     - -F
     - $(params.appName)
+    - n
+    - $(params.fromNamespace)
     - --from-dir
     - "."
   - name: oc-tag-image
