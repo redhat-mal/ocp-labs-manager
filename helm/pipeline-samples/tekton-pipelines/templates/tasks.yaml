@@ -69,7 +69,7 @@ spec:
       description: The application name
     - name: resourceFilter
       description: Filter of assets from build to copy to upload
-      default: *.{jar}
+      default: '*.{jar}'
   resources:
     inputs:
     - name: source
