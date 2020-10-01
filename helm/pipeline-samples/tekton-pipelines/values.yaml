@@ -4,18 +4,12 @@
 
 
 pipeline:
-  image_stream_namespace: openshift
   namespace: att-pipelines
-  image_stream_name: openjdk-8-rhel8:1.2
-  source_repo: https://github.com/malacourse/spring-rest.git
-  source_ref: master
-  source_context_dir: basic-spring-boot
   webhook_secret_key: ATT_DEMO_KEY
   webhook_secret_val: foo-bar-123
-  resource_name: spring-rest-1.0.0.jar
 
 sonar:
-  route: http://sonarqube-insecure-labs-cicd.apps.att-demo.ocp-labs.rhtelco.io/
+  route: http://sonarqube-insecure-cicd-tools.apps.att-demo.ocp-labs.rhtelco.io/projects
   username: admin
   password: admin
   

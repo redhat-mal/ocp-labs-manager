@@ -47,6 +47,9 @@ spec:
     - name: APP_NAME
       type: string
       default: pipeline-sample-app
+    - name: IMAGE_TAG
+      type: string
+      default: latest
   resources:
   - name: maven-build-image-pipeline-git
     type: git
@@ -110,6 +113,8 @@ spec:
       value: "$(params.NAMESPACE_FROM)"
     - name: appName
       value: "$(params.APP_NAME)"
+    - name: imageTag
+      value: "$(params.IMAGE_TAG)"
     taskRef:
       name: maven-build-binary-build
     resources:

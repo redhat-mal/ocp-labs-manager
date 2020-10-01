@@ -24,8 +24,8 @@ spec:
     workingDir: /workspace/source/upload
     args:
     - tag
-    - $(params.fromNamespace)/$(params.appName):latest
-    - $(params.toNamespace)/$(params.appName):latest
+    - $(params.fromNamespace)/$(params.appName):$(params.imageTag)
+    - $(params.toNamespace)/$(params.appName):$(params.imageTag)
 ---
 apiVersion: tekton.dev/v1beta1
 kind: Task
@@ -62,7 +62,7 @@ spec:
       description: The namespace we are tagging from
     - name: toNamespace
       description: The namespace we are tagging to
-    - name: tag
+    - name: imageTag
       description: The image tag
       default: latest
     - name: appName
@@ -89,7 +89,7 @@ spec:
     image: quay.io/openshift-pipeline/openshift-cli:latest
     command: ["cp"]
     args:
-      - /workspace/source/target/{{ .Values.pipeline.resource_name }}
+      - /workspace/source/target/*.{jar,war}
       - /workspace/source/upload
   - name: oc-binary-build
     image: quay.io/openshift-pipeline/openshift-cli:latest
@@ -110,8 +110,8 @@ spec:
     workingDir: /workspace/source/upload
     args:
     - tag
-    - $(params.fromNamespace)/$(params.appName):latest
-    - $(params.toNamespace)/$(params.appName):latest
+    - $(params.fromNamespace)/$(params.appName):$(params.imageTag)
+    - $(params.toNamespace)/$(params.appName):$(params.imageTag)
 ---
 apiVersion: tekton.dev/v1beta1
 kind: Task
