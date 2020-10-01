@@ -69,6 +69,7 @@ probes:
 application_tag: latest
 
 build:
+  deploy: false
   namespace: labs-cicd
   image_stream_namespace: openshift
   image_stream_name: openjdk-8-rhel8:1.2

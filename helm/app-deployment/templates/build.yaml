@@ -1,4 +1,4 @@
-{{- if .Values.pipeline.deploy }}
+{{- if .Values.build.deploy }}
 ---
 apiVersion: image.openshift.io/v1
 kind: ImageStream

@@ -8,9 +8,6 @@ namespace: labs-cicd
 argocd:
   enabled: true
   name: argocd
-  projects:
-  - name: att-stage
-  - name: att-prod
 
 sonar:
   enabled: true
