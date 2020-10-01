@@ -38,9 +38,9 @@ spec:
           - taskName: build-image
             serviceAccountName: {{ .Values.pipeline.service_account }}
         params:
-          - name: TO_NAMESPACE
+          - name: NAMESPACE_TO
             value: {{ .Values.namespace}}
-          - name: FROM_NAMESPACE
+          - name: NAMESPACE_FROM
             value: {{ .Values.build.namespace }}
           - name: APP_NAME
             value: {{ .Release.Name }}
