@@ -12,7 +12,7 @@ spec:
       description: The namespace we are tagging from
     - name: toNamespace
       description: The namespace we are tagging to
-    - name: tag
+    - name: imageTag
       description: The image tag
       default: latest
     - name: appName
