@@ -91,6 +91,7 @@ spec:
     args:
       - /workspace/source/target/*.{jar,war}
       - /workspace/source/upload
+      - 2>/dev/null
   - name: oc-binary-build
     image: quay.io/openshift-pipeline/openshift-cli:latest
     command: ["/usr/local/bin/oc"]
