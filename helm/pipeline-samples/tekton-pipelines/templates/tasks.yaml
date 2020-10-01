@@ -100,7 +100,7 @@ spec:
     - -w
     - -F
     - $(params.appName)
-    - n
+    - -n
     - $(params.fromNamespace)
     - --from-dir
     - "."
