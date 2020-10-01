@@ -67,6 +67,9 @@ spec:
       default: latest
     - name: appName
       description: The application name
+    - name: resourceFilter
+      description: Filter of assets from build to copy to upload
+      default: *.{jar}
   resources:
     inputs:
     - name: source
@@ -89,9 +92,8 @@ spec:
     image: quay.io/openshift-pipeline/openshift-cli:latest
     command: ["cp"]
     args:
-      - /workspace/source/target/*.{jar,war}
+      - /workspace/source/target/$(params.resourceFilter)
       - /workspace/source/upload
-      - 2>/dev/null
   - name: oc-binary-build
     image: quay.io/openshift-pipeline/openshift-cli:latest
     command: ["/usr/local/bin/oc"]
