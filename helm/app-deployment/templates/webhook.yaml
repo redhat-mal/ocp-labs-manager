@@ -44,7 +44,7 @@ spec:
             value: {{ .Values.build.namespace }}
           - name: APP_NAME
             value: {{ .Release.Name }}
-          - name: imageTag
+          - name: IMAGE_TAG
             value: $(params.gitrevision)
         resources:
           - name: {{ .Values.pipeline.name }}-git
