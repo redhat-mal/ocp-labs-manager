@@ -90,10 +90,10 @@ spec:
       - /workspace/source/upload
   - name: copy-assets
     image: quay.io/openshift-pipeline/openshift-cli:latest
-    command: ["cp"]
+    command: ["/bin/bash"]
     args:
-      - /workspace/source/target/$(params.resourceFilter)
-      - /workspace/source/upload
+      - '-c'
+      - /workspace/source/target/$(params.resourceFilter) /workspace/source/upload
   - name: oc-binary-build
     image: quay.io/openshift-pipeline/openshift-cli:latest
     command: ["/usr/local/bin/oc"]
