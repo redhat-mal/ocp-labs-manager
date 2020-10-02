@@ -7,6 +7,7 @@ pipeline:
   namespace: att-pipelines
   webhook_secret_key: ATT_DEMO_KEY
   webhook_secret_val: foo-bar-123
+  tools_namespace: cicd-tools
 
 sonar:
   route: http://sonarqube-insecure-cicd-tools.apps.att-demo.ocp-labs.rhtelco.io/projects

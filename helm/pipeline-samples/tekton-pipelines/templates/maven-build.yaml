@@ -123,4 +123,18 @@ spec:
         resource: maven-build-image-pipeline-git
     runAfter:
     - sonar-scan
+  - name: update-app-image-tag
+    params:
+    - name: appName
+      value: "$(params.APP_NAME)"
+    - name: imageTag
+      value: "$(params.IMAGE_TAG)"
+    taskRef:
+      name: update-argo-app-tag
+    resources:
+      inputs:
+      - name: source
+        resource: maven-build-image-pipeline-git
+    runAfter:
+    - build-image
 

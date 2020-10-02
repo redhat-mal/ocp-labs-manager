@@ -54,6 +54,35 @@ kind: Task
 metadata:
   labels:
     app.kubernetes.io/name: {{ .Release.Name }}
+  name: update-argo-app-tag
+  namespace: {{ .Values.pipeline.namespace }}
+spec:
+  params:
+    - name: appName
+      description: The expected value
+    - name: imageTag
+      description: The url to curl
+  steps:
+  - name: verify-url
+    image: quay.io/openshift-pipeline/openshift-cli:latest
+    command: ["/usr/local/bin/oc"]
+    workingDir: /workspace/source
+    args:
+    - patch
+    - application
+    - $(params.appName)
+    - -n
+    - {{ .Values.pipeline.tools_namespace }}
+    - --type
+    - json
+    - -p
+    - '[{"op": "replace", "path": "/spec/source/helm/parameters/0/value", "value":"$(params.attTag)"}]'
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  labels:
+    app.kubernetes.io/name: {{ .Release.Name }}
   name: maven-build-binary-build
   namespace: {{ .Values.pipeline.namespace }}
 spec:
