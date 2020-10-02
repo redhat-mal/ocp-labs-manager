@@ -76,7 +76,7 @@ spec:
     - --type
     - json
     - -p
-    - '[{"op": "replace", "path": "/spec/source/helm/parameters/0/value", "value":"$(params.attTag)"}]'
+    - '[{"op": "replace", "path": "/spec/source/helm/parameters/0/value", "value":"$(params.imageTag)"}]'
 ---
 apiVersion: tekton.dev/v1beta1
 kind: Task
