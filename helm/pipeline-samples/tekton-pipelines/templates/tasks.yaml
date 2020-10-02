@@ -113,6 +113,7 @@ spec:
     workingDir: /workspace/source/upload
     args:
     - tag
+    - $(params.fromNamespace)/$(params.appName):latest      
     - $(params.fromNamespace)/$(params.appName):$(params.imageTag)
   - name: oc-tag-image
     image: quay.io/openshift-pipeline/openshift-cli:latest
