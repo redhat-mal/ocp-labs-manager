@@ -107,6 +107,13 @@ spec:
     - $(params.fromNamespace)
     - --from-dir
     - "."
+  - name: oc-tag-build-image
+    image: quay.io/openshift-pipeline/openshift-cli:latest
+    command: ["/usr/local/bin/oc"]
+    workingDir: /workspace/source/upload
+    args:
+    - tag
+    - $(params.fromNamespace)/$(params.appName):$(params.imageTag)
   - name: oc-tag-image
     image: quay.io/openshift-pipeline/openshift-cli:latest
     command: ["/usr/local/bin/oc"]
