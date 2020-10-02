@@ -62,6 +62,10 @@ spec:
       description: The expected value
     - name: imageTag
       description: The url to curl
+  resources:
+    inputs:
+    - name: source
+      type: git
   steps:
   - name: verify-url
     image: quay.io/openshift-pipeline/openshift-cli:latest
