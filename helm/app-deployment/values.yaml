@@ -73,17 +73,15 @@ build:
   namespace: labs-cicd
   image_stream_namespace: openshift
   image_stream_name: openjdk-8-rhel8:1.2
-  resource_name: spring-rest-1.0.0.jar
 
 pipeline:
   deploy: false
-  name: maven-build-image-pipeline
+  name: test-and-promote-pipeline
   namespace: att-pipelines
   service_account: att-pipelines-sa
   source_repo: https://github.com/malacourse/spring-rest.git
   source_ref: master
   source_context_dir: basic-spring-boot
-  resource_name: spring-rest-1.0.0.jar
 
 
 

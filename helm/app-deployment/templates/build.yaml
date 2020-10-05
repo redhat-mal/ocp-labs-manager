@@ -20,7 +20,7 @@ spec:
   output:
     to:
       kind: ImageStreamTag
-      name: {{ .Release.Name }}:{{ .Values.application_tag }}
+      name: {{ .Release.Name }}:latest
   postCommit: {}
   resources: {}
   runPolicy: Serial
