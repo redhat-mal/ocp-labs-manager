@@ -73,7 +73,7 @@ spec:
     - name: gitreponame
       description: The git repository name
       default: {{ .Release.Name }}
-    resourcetemplates:
+  resourcetemplates:
     - apiVersion: tekton.dev/v1alpha1
       kind: PipelineResource
       metadata:
