@@ -3,6 +3,60 @@
 apiVersion: triggers.tekton.dev/v1alpha1
 kind: TriggerTemplate
 metadata:
+  name: {{ .Release.Name }}-qa-triggertemplate
+  namespace: {{ .Values.pipeline.namespace }}
+spec:
+  params:
+    - name: gitrevision
+      description: The git revision
+      default: {{ .Values.pipeline.source_ref }}
+    - name: gitrepositoryurl
+      description: The git repository url
+      default: {{ .Values.pipeline.source_repo }}
+  resourcetemplates:
+    - apiVersion: tekton.dev/v1alpha1
+      kind: PipelineResource
+      metadata:
+        name: {{ .Release.Name }}-git-$(uid)
+      spec:
+        type: git
+        params:
+        - name: revision
+          value: $(params.gitrevision)
+        - name: url
+          value: $(params.gitrepositoryurl)
+        - name: sslVerify
+          value: "false"
+    - apiVersion: tekton.dev/v1alpha1
+      kind: PipelineRun
+      metadata:
+        name: {{ .Release.Name }}-build-pipeline-run-$(uid)
+      spec:
+        pipelineRef:
+          name: {{ .Values.pipeline.name }}
+        serviceAccountNames:
+          - taskName: build-image
+            serviceAccountName: {{ .Values.pipeline.service_account }}
+        params:
+          - name: NAMESPACE_TO
+            value: {{ .Values.namespace}}
+          - name: NAMESPACE_FROM
+            value: {{ .Values.build.namespace }}
+          - name: APP_NAME
+            value: {{ .Release.Name }}
+          - name: IMAGE_TAG
+            value: $(params.gitrevision)
+        resources:
+          - name: {{ .Values.pipeline.name }}-git
+            resourceRef:
+              name: {{ .Release.Name }}-git-$(uid)
+        workspaces:
+        - name: local-tssc-repo
+          emptyDir: {}
+---
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: TriggerTemplate
+metadata:
   name: {{ .Release.Name }}-build-triggertemplate
   namespace: {{ .Values.pipeline.namespace }}
 spec:
@@ -76,10 +130,26 @@ metadata:
 spec:
   serviceAccountName: {{ .Values.pipeline.service_account }}
   triggers:
-  - bindings:
+  - name: {{ .Release.Name }}-trigger-stage
+    interceptors:
+        - cel:
+            filter: >-
+              (header.match('X-GitHub-Event', 'push') &&
+               body.ref.startsWith('refs/heads/master')          
+    bindings:
     - name: {{ .Release.Name }}-pipelinebinding
     template:
       name: {{ .Release.Name }}-build-triggertemplate
+  - name: {{ .Release.Name }}-trigger-qa
+    interceptors:
+        - cel:
+            filter: >-
+              (header.match('X-GitHub-Event', 'push') &&
+               body.ref.startsWith('refs/heads/qa')
+    bindings:
+    - name: {{ .Release.Name }}-pipelinebinding
+    template:
+      name: {{ .Release.Name }}-qa-triggertemplate
 ---
 apiVersion: route.openshift.io/v1
 kind: Route
