@@ -13,6 +13,9 @@ spec:
     - name: gitrepositoryurl
       description: The git repository url
       default: {{ .Values.pipeline.source_repo }}
+    - name: gitreponame
+      description: The git repository name
+      default: {{ .Release.Name }}
   resourcetemplates:
     - apiVersion: tekton.dev/v1alpha1
       kind: PipelineResource
@@ -39,15 +42,15 @@ spec:
             serviceAccountName: {{ .Values.pipeline.service_account }}
         params:
           - name: NAMESPACE_TO
-            value: {{ .Values.namespace}}
+            value: {{ .Values.namespace_qa}}
           - name: NAMESPACE_FROM
             value: {{ .Values.build.namespace }}
           - name: APP_NAME
-            value: {{ .Release.Name }}
+            value: $(params.gitreponame)
           - name: IMAGE_TAG
-            value: $(params.gitrevision)
+            value: {{ .Values.application_tag }}
         resources:
-          - name: {{ .Values.pipeline.name }}-git
+          - name: test-and-promote-pipeline-git
             resourceRef:
               name: {{ .Release.Name }}-git-$(uid)
         workspaces:
@@ -67,7 +70,10 @@ spec:
     - name: gitrepositoryurl
       description: The git repository url
       default: {{ .Values.pipeline.source_repo }} 
-  resourcetemplates:
+    - name: gitreponame
+      description: The git repository name
+      default: {{ .Release.Name }}
+    resourcetemplates:
     - apiVersion: tekton.dev/v1alpha1
       kind: PipelineResource
       metadata:
@@ -97,7 +103,7 @@ spec:
           - name: NAMESPACE_FROM
             value: {{ .Values.build.namespace }}
           - name: APP_NAME
-            value: {{ .Release.Name }}
+            value: $(params.gitreponame)
           - name: IMAGE_TAG
             value: $(params.gitrevision)
         resources:
@@ -121,6 +127,8 @@ spec:
       value: $(body.head_commit.id)
     - name: gitrepositoryurl
       value: $(body.repository.url)
+    - name: gitreponame
+      value: $(body.repository.name)
 ---
 apiVersion: triggers.tekton.dev/v1alpha1
 kind: EventListener
