@@ -30,10 +30,10 @@ spec:
     - apiVersion: tekton.dev/v1alpha1
       kind: PipelineRun
       metadata:
-        name: {{ .Release.Name }}-build-pipeline-run-$(uid)
+        name: {{ .Release.Name }}-qa-pipeline-run-$(uid)
       spec:
         pipelineRef:
-          name: {{ .Values.pipeline.name }}
+          name: test-and-promote-pipeline
         serviceAccountNames:
           - taskName: build-image
             serviceAccountName: {{ .Values.pipeline.service_account }}
@@ -87,7 +87,7 @@ spec:
         name: {{ .Release.Name }}-build-pipeline-run-$(uid)
       spec:
         pipelineRef:
-          name: {{ .Values.pipeline.name }}
+          name: maven-build-image-pipeline
         serviceAccountNames:
           - taskName: build-image
             serviceAccountName: {{ .Values.pipeline.service_account }}
@@ -135,7 +135,7 @@ spec:
         - cel:
             filter: >-
               (header.match('X-GitHub-Event', 'push') &&
-               body.ref.startsWith('refs/heads/master')          
+               body.ref.startsWith('refs/heads/master'))          
     bindings:
     - name: {{ .Release.Name }}-pipelinebinding
     template:
@@ -145,7 +145,7 @@ spec:
         - cel:
             filter: >-
               (header.match('X-GitHub-Event', 'push') &&
-               body.ref.startsWith('refs/heads/qa')
+               body.ref.startsWith('refs/heads/qa'))
     bindings:
     - name: {{ .Release.Name }}-pipelinebinding
     template:
