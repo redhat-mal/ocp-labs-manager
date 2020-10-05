@@ -92,7 +92,7 @@ spec:
       from:
         kind: ImageStreamTag
         namespace: {{ .Values.namespace }}
-        name: {{ .Release.Name }}:{{ .Values.application_tag }}
+        name: {{ .Values.application_name }}:{{ .Values.application_tag }}
 
 
 
