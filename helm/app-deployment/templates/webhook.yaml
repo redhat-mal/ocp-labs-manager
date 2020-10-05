@@ -45,6 +45,8 @@ spec:
             value: {{ .Values.namespace_qa}}
           - name: NAMESPACE_FROM
             value: {{ .Values.build.namespace }}
+          - name: NAMESPACE_TOOLS
+            value: {{ .Values.pipeline.namespace_tools }}
           - name: APP_NAME
             value: {{ .Values.application_name }}
           - name: IMAGE_TAG
