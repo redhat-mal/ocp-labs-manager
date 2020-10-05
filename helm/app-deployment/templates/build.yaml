@@ -13,7 +13,7 @@ kind: BuildConfig
 metadata:
   labels:
     app.kubernetes.io/name: {{.Release.Name }}
-  name: {{.Release.Name }}
+  name: {{ .Values.application_name }}
   namespace: {{ .Values.build.namespace }}
 spec:
   failedBuildsHistoryLimit: 5
