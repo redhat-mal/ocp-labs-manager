@@ -38,7 +38,7 @@ spec:
         pipelineRef:
           name: test-and-promote-pipeline
         serviceAccountNames:
-          - taskName: build-image
+          - taskName: promote-image
             serviceAccountName: {{ .Values.pipeline.service_account }}
         params:
           - name: NAMESPACE_TO
