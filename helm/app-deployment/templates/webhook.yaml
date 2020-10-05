@@ -101,7 +101,7 @@ spec:
           - name: IMAGE_TAG
             value: $(params.gitrevision)
         resources:
-          - name: {{ .Values.pipeline.name }}-git
+          - name: maven-build-image-pipeline-git
             resourceRef:
               name: {{ .Release.Name }}-git-$(uid)
         workspaces:
