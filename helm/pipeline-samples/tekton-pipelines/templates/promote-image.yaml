@@ -16,6 +16,9 @@ spec:
     - name: NAMESPACE_FROM
       type: string
       default: att-stage
+    - name: NAMESPACE_TOOLS
+      type: string
+      default: cicd-tools
     - name: IMAGE_TAG
       type: string
       default: latest
@@ -53,4 +56,11 @@ spec:
       name: promote-image
     runAfter:
     - functional-test
-
+  - name: update-app
+    params:
+    - name: argocdNamespace
+      value: "$(params.NAMESPACE_TOOLS)"
+    taskRef:
+      name: update-argo-app
+    runAfter:
+    - promote-image

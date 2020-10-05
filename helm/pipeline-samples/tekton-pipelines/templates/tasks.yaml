@@ -87,6 +87,31 @@ kind: Task
 metadata:
   labels:
     app.kubernetes.io/name: {{ .Release.Name }}
+  name: update-argo-app
+  namespace: {{ .Values.pipeline.namespace }}
+spec:
+  params:
+    - name: argocdNamespace
+      description: The expected value
+  resources:
+    inputs:
+    - name: source
+      type: git
+  steps:
+  - name: apply-new-config
+    image: quay.io/openshift-pipeline/openshift-cli:latest
+    command: ["/usr/local/bin/oc"]
+    workingDir: /workspace/source
+    args:
+    - apply
+    - -f
+    - "./openshift"
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  labels:
+    app.kubernetes.io/name: {{ .Release.Name }}
   name: maven-build-binary-build
   namespace: {{ .Values.pipeline.namespace }}
 spec:
