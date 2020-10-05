@@ -12,22 +12,22 @@ spec:
   params:
     - name: NAMESPACE_TO
       type: string
-      default: att-stage
+      default: att-qa
     - name: NAMESPACE_FROM
       type: string
-      default: att-demo
+      default: att-stage
     - name: IMAGE_TAG
       type: string
       default: latest
     - name: APP_NAME
       type: string
-      default: pipeline-sample-app
+      default: spring-boot-demo
     - name: TEST_ROUTE
       type: string
     - name: TEST_RESULT
       type: string
   resources:
-  - name: {{ .Release.Name }}-git
+  - name: test-and-promote-pipeline-git
     type: git
   tasks:
   - name: functional-test
