@@ -46,7 +46,7 @@ spec:
           - name: NAMESPACE_FROM
             value: {{ .Values.build.namespace }}
           - name: APP_NAME
-            value: $(params.gitreponame)
+            value: {{ .Values.application_name }}
           - name: IMAGE_TAG
             value: {{ .Values.application_tag }}
         resources:
@@ -103,7 +103,7 @@ spec:
           - name: NAMESPACE_FROM
             value: {{ .Values.build.namespace }}
           - name: APP_NAME
-            value: $(params.gitreponame)
+            value: {{ .Values.application_name }}
           - name: IMAGE_TAG
             value: $(params.gitrevision)
         resources:

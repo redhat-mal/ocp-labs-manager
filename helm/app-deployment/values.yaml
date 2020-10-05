@@ -4,6 +4,8 @@
 
 namespace: att-demo
 
+application_name: spring-rest-demo
+
 replicaCount: 1
 
 triggers:
