@@ -76,7 +76,7 @@ build:
 
 pipeline:
   deploy: false
-  name: test-and-promote-pipeline
+  name: maven-build-image-pipeline
   namespace: att-pipelines
   service_account: att-pipelines-sa
   source_repo: https://github.com/malacourse/spring-rest.git

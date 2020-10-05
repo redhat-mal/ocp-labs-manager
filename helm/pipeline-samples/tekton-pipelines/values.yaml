@@ -10,7 +10,7 @@ pipeline:
   tools_namespace: cicd-tools
 
 sonar:
-  route: http://sonarqube-insecure-cicd-tools.apps.att-demo.ocp-labs.rhtelco.io/projects
+  route: http://sonarqube-insecure-cicd-tools.apps.att-demo.ocp-labs.rhtelco.io
   username: admin
   password: admin
   
