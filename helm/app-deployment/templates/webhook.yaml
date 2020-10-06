@@ -79,7 +79,7 @@ spec:
     - apiVersion: tekton.dev/v1alpha1
       kind: PipelineResource
       metadata:
-        name: {{ .Release.Name }}-git-$(uid)
+        name: maven-build-image-pipeline-git-$(uid)
       spec:
         type: git
         params:
@@ -111,12 +111,10 @@ spec:
         resources:
           - name: maven-build-image-pipeline-git
             resourceRef:
-              name: maven-build-image-pipline-$(uid)
+              name: maven-build-image-pipeline-git-$(uid)
         workspaces:
         - name: local-tssc-repo
           emptyDir: {}
-          # persistentVolumeClaim:
-          #  claimName: tssc-pipe-storage
 ---
 apiVersion: triggers.tekton.dev/v1alpha1
 kind: TriggerBinding
