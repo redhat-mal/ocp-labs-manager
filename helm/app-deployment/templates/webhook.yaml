@@ -111,7 +111,7 @@ spec:
         resources:
           - name: maven-build-image-pipeline-git
             resourceRef:
-              name: maven-build-image-pipelin--$(uid)
+              name: maven-build-image-pipline-$(uid)
         workspaces:
         - name: local-tssc-repo
           emptyDir: {}
