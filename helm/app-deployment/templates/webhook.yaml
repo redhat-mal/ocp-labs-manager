@@ -25,7 +25,7 @@ spec:
         type: git
         params:
         - name: revision
-          value: $(params.gitrevision)
+          value: qa
         - name: url
           value: $(params.gitrepositoryurl)
         - name: sslVerify
