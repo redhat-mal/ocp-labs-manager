@@ -9,7 +9,7 @@ spec:
   params:
     - name: gitrevision
       description: The git revision
-      default: {{ .Values.pipeline.source_ref }}
+      default: qa
     - name: gitrepositoryurl
       description: The git repository url
       default: {{ .Values.pipeline.source_repo }}
