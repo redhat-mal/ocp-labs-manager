@@ -62,5 +62,9 @@ spec:
       value: "$(params.NAMESPACE_TOOLS)"
     taskRef:
       name: update-argo-app
-    runAfter:
+    resources:
+      inputs:
+      - name: source
+        resource: test-and-promote-pipeline-git
+   runAfter:
     - promote-image
