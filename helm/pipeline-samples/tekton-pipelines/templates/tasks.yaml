@@ -274,7 +274,6 @@ spec:
   steps:
     - name: scan-source
       image: gcr.io/cloud-builders/mvn
-      #workingdir: /workspace/source
       envFrom:
         - configMapRef:
             name: sonarqube-config
@@ -283,6 +282,7 @@ spec:
             name: sonarqube-access
             optional: true
       command: ["/usr/bin/mvn"]
+      workingDir: /workspace/source
       args:
       #- "-lrt"
       - package
