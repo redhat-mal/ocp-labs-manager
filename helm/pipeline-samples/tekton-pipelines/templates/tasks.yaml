@@ -274,7 +274,7 @@ spec:
   steps:
     - name: scan-source
       image: gcr.io/cloud-builders/mvn
-      workingdir: /workspace/source
+      #workingdir: /workspace/source
       envFrom:
         - configMapRef:
             name: sonarqube-config
