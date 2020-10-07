@@ -34,6 +34,8 @@ spec:
       kind: PipelineRun
       metadata:
         name: {{ .Release.Name }}-qa-pipeline-run-$(uid)
+        annotations:
+          argocd.argoproj.io/compare-options: IgnoreExtraneous        
       spec:
         pipelineRef:
           name: test-and-promote-pipeline
@@ -93,6 +95,8 @@ spec:
       kind: PipelineRun
       metadata:
         name: {{ .Release.Name }}-build-pipeline-run-$(uid)
+        annotations:
+          argocd.argoproj.io/compare-options: IgnoreExtraneous
       spec:
         pipelineRef:
           name: maven-build-image-pipeline
