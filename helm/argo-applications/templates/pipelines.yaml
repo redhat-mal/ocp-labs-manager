@@ -3,10 +3,10 @@ apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: {{ .Release.Name }}
-  namespace: {{ .Values.pipeline_namespace }}
+  namespace: {{ .Values.tools_namespace }}
 spec:
   destination:
-    namespace: {{ .Values.tools_namespace }}
+    namespace: {{ .Values.pipeline_namespace }}
     server: 'https://kubernetes.default.svc'
   project: default
   source:
