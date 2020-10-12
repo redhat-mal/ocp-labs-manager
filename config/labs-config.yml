@@ -5,12 +5,31 @@ labitems:
   description: Openshift cluster used to demo ATT functionality ocp-admin, R3dHat123!
   url: https://console-openshift-console.apps.att-demo.ocp-labs.rhtelco.io
   vars: []
+- name: cluster-post-install-config
+  type: helm
+  config-dir: cluster-config
+  description: Configure htpasswd users for labs cluster
+  vars:
+     namespace:
+       value: labs-cicd
+       description: Namespace to install role binding
+  url: https://labs.rhtelco.io
 - name: labs-pipeline-operators
   type: helm
   config-dir: pipeline-operators
+  description: Installs Tekton and ArgoCd operators for Piipeline support, Argocd in namespace labs-cicd
+  vars:
+     namespace:
+       value: labs-cicd
+       description: Namespace to install argocd
+  url: https://labs.rhtelco.io
+- name: labs-pipeline-tools
+  type: helm
+  config-dir: pipeline-tools
   description: Installs Tekton and ArgoCd for Pipeline support, Argocd in namespace labs-cicd
   vars:
      namespace:
        value: labs-cicd
        description: Namespace to install argocd
   url: https://labs.rhtelco.io
+

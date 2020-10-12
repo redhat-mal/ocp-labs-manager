@@ -3,7 +3,7 @@
 # Declare variables to be passed into your templates.
 #
 
-namespace: labs-cicd
+namespace: cicd-tools
 
 argocd:
   enabled: true

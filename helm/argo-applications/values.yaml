@@ -1,0 +1,8 @@
+# Default values for argo-applications.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+tools_namespace: labs-cicd
+pipeline_namespace: att-pipelines
+
+

@@ -1,0 +1,25 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: {{ .Release.Name }}
+  namespace: {{ .Values.pipeline_namespace }}
+spec:
+  destination:
+    namespace: {{ .Values.tools_namespace }}
+    server: 'https://kubernetes.default.svc'
+  project: default
+  source:
+    helm:
+      parameters:
+        - name: sonar.route
+          value: >-
+            http://sonarqube-insecure-{{ .Values.tools_namespace }}.apps.att-demo.ocp-labs.rhtelco.io
+        - name: pipeline.tools_namespace
+          value: {{ .Values.tools_namespace }}
+    path: helm/pipeline-samples/tekton-pipelines
+    repoURL: 'https://github.com/redhat-mal/ocp-labs-manager.git'
+    targetRevision: HEAD
+  syncPolicy:
+    automated: {}
+  

@@ -1,0 +1,65 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  labels:
+    app.kubernetes.io/name: mikes-test
+  name: create-pull-request
+  namespace: att-pipelines
+spec:
+  params:
+    - name: filePath
+      description: The expected value
+    - name: imageTag
+      description: The url to curl
+  resources:
+    inputs:
+    - name: source
+      type: git
+  steps:
+  - name: update-yaml
+    image: quay.io/bitnami/git
+    script: |
+       #!/usr/bin/env bash
+       echo "Hello from Bash!"
+       cd source 
+       ls -lrt 
+       git checkout qa
+       ls -lrt ./.openshift
+       FOO_VAL=$(awk '/name: application_tag/{getline; print}' ./.openshift/spring-boot-demo.yaml)
+       echo "FOO: $FOO_VAL"
+       
+---
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  labels:
+    app.kubernetes.io/name: mikes-test
+  name: mikes-test
+  namespace: att-pipelines
+spec:
+  workspaces:
+  - name: local-tssc-repo
+  params:
+    - name: FILE_PATH
+      type: string
+      default: "./.openshift/spring-boot-demo.yaml"
+    - name: NEW_VALUE
+      type: string
+      default: foo123
+  resources:
+  - name: test-and-promote-pipeline-git
+    type: git
+  tasks:
+  - name: update-app
+    params:
+    - name: filePath
+      value: "$(params.FILE_PATH)"
+    - name: imageTag
+      value: "$(params.NEW_VALUE)"
+    taskRef:
+      name: create-pull-request
+    resources:
+      inputs:
+      - name: source
+        resource: test-and-promote-pipeline-git

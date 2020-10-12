@@ -11,3 +11,4 @@ fi
 
 oc project $1
 helm uninstall lab-operators-$1
+
