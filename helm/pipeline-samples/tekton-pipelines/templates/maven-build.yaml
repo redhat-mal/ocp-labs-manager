@@ -106,6 +106,10 @@ spec:
     runAfter:
     - unit-test
   - name: get-version
+    resources:
+      inputs:
+      - name: source
+        resource: maven-build-image-pipeline-git
     taskRef:
       name: get-pom-version
     params:
