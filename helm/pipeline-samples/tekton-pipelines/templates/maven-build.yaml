@@ -105,6 +105,14 @@ spec:
         resource: maven-build-image-pipeline-git
     runAfter:
     - unit-test
+  - name: get-build-id
+    taskRef:
+      name: generate-build-id
+    params:
+      - name: base-version
+        value: "2.0"
+    runAfter:
+    - sonar-scan
   - name: build-image
     params:
     - name: toNamespace
@@ -114,7 +122,8 @@ spec:
     - name: appName
       value: "$(params.APP_NAME)"
     - name: imageTag
-      value: "$(params.IMAGE_TAG)"
+      #value: "$(params.IMAGE_TAG)"
+      value: "$(tasks.get-build-id.results.build-id)"
     taskRef:
       name: maven-build-binary-build
     resources:
@@ -122,13 +131,14 @@ spec:
       - name: source
         resource: maven-build-image-pipeline-git
     runAfter:
-    - sonar-scan
+    - get-build-id
   - name: update-app-image-tag
     params:
     - name: appName
       value: "$(params.APP_NAME)"
     - name: imageTag
-      value: "$(params.IMAGE_TAG)"
+      #value: "$(params.IMAGE_TAG)"
+      value: "$(tasks.get-build-id.results.build-id)"
     taskRef:
       name: update-argo-app-tag
     resources:
