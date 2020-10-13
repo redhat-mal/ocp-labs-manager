@@ -35,5 +35,8 @@ spec:
       script: |
         #!/usr/bin/env bash
         ts=`cat $(results.timestamp.path)`
-        buildId=$(inputs.params.base-version)-${ts}
+        echo "Current Timestamp2: ${ts}"
+        echo "Current base version $(inputs.params.base-version)"
+        buildId="$(inputs.params.base-version)-${ts}"
+        echo "here"
         echo ${buildId} | tr -d "\n" | tee $(results.build-id.path)
