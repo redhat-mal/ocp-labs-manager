@@ -105,14 +105,22 @@ spec:
         resource: maven-build-image-pipeline-git
     runAfter:
     - unit-test
+  - name: get-version
+    taskRef:
+      name: get-pom-version
+    params:
+      - name: default-version
+        value: "2.0"
+    runAfter:
+    - sonar-scan
   - name: get-build-id
     taskRef:
       name: generate-build-id
     params:
       - name: base-version
-        value: "2.0"
+        value: "$(tasks.get-version.results.pom-version)"
     runAfter:
-    - sonar-scan
+    - get-version
   - name: build-image
     params:
     - name: toNamespace

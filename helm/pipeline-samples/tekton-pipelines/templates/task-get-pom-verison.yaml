@@ -1,0 +1,29 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: get-pom-version
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/tags: build-tool
+    tekton.dev/displayName: "pomversion"
+spec:
+  description: >-
+    Given a base version, this task generates a unique build id by appending
+    the base-version to the current timestamp.
+  params:
+    - name: default-version
+      description: Base product version
+      type: string
+      default: "1.0"
+  results:
+    - name: pom-version
+      description: Version of pom artifact
+  steps:
+    - name: mvn-version
+      image: bash:latest
+      script: |
+        #!/usr/bin/env bash
+        mvn org.apache.maven.plugins:maven-help-plugin:2.1.1:evaluate \
+    -Dexpression=project.version
