@@ -17,6 +17,10 @@ spec:
       description: Base product version
       type: string
       default: "1.0"
+  resources:
+    inputs:
+    - name: source
+      type: git      
   results:
     - name: pom-version
       description: Version of pom artifact
