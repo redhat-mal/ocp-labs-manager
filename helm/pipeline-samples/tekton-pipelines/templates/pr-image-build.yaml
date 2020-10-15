@@ -12,7 +12,7 @@ kind: BuildConfig
 metadata:
   labels:
     app.kubernetes.io/name: {{.Release.Name }}
-  name: {{ .Values.application_name }}
+  name: pull-request-task
   namespace: {{ .Values.pipeline.namespace }}
 spec:
   failedBuildsHistoryLimit: 5
