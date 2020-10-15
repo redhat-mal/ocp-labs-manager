@@ -34,7 +34,7 @@ spec:
     dockerStrategy:
       from:
         kind: DockerImage
-        name: quay.io/openshift-pipeline/openshift-cli:latest 
+        name: quay.io/bitnami/git:latest 
   triggers:
   - type: ConfigChange
   - type: ImageChange
