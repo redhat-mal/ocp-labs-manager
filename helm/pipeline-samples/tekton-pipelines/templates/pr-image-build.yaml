@@ -1,0 +1,41 @@
+---
+apiVersion: image.openshift.io/v1
+kind: ImageStream
+metadata:
+  labels:
+    app.kubernetes.io/name: {{ .Release.Name }}
+  name: pull-request-task
+  namespace: {{ .Values.pipeline.namespace }}
+---
+apiVersion: build.openshift.io/v1
+kind: BuildConfig
+metadata:
+  labels:
+    app.kubernetes.io/name: {{.Release.Name }}
+  name: {{ .Values.application_name }}
+  namespace: {{ .Values.pipeline.namespace }}
+spec:
+  failedBuildsHistoryLimit: 5
+  output:
+    to:
+      kind: ImageStreamTag
+      name: pull-request-task:latest
+  postCommit: {}
+  resources: {}
+  runPolicy: Serial
+  source:
+    contextDir: helm/pipeline-samples/tekton-pipelines/files/pr
+    git:
+      ref: master
+      uri: https://github.com/redhat-mal/ocp-labs-manager.git
+    type: Git
+  strategy:
+    type: Docker
+    dockerStrategy:
+      from:
+        kind: DockerImage
+        name: quay.io/openshift-pipeline/openshift-cli:latest 
+  triggers:
+  - type: ConfigChange
+  - type: ImageChange
+

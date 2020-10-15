@@ -31,5 +31,4 @@ spec:
       script: |
         #!/usr/bin/env bash
         MVN_VERSION=$(/usr/bin/mvn -q -Dexec.executable=echo -Dexec.args='${project.version}' --non-recursive exec:exec)
-        echo "=$MVN_VERSION="
         echo $MVN_VERSION | tr -d "\n" | tee $(results.pom-version.path)
