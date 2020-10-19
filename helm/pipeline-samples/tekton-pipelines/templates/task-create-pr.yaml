@@ -56,6 +56,7 @@ spec:
        NEW_VAL=$(params.imageTag)
        ls -lrt ./.openshift
        REPLACE_VAL=$(awk '/name: application_tag/{getline; print}' ./.openshift/spring-boot-demo.yaml)
+       REPLACE_VAL=${REPLACE_VAL#*:}
        echo "FOO: $REPLACE_VAL"
        sed -i "s/$REPLACE_VAL/$NEW_VAL/" ./.openshift/spring-boot-demo.yaml
        cat ./.openshift/spring-boot-demo.yaml
