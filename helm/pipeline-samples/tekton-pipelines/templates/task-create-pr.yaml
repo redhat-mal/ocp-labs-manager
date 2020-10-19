@@ -34,7 +34,6 @@ spec:
        #!/usr/bin/env bash
        echo "Hello from Bash!"
        cd source 
-       ls -lrt 
        echo "Updating file: $(params.filePath)"
        GIT_URL=$(resources.inputs.source.url)
        echo "URL: $GIT_URL"
@@ -50,6 +49,7 @@ spec:
          protocol: https
        EOF3
        git checkout qa
+       ls -lrt
        NEW_VAL=$(params.imageTag)
        ls -lrt ./.openshift
        REPLACE_VAL=$(awk '/name: application_tag/{getline; print}' ./.openshift/spring-boot-demo.yaml)

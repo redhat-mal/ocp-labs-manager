@@ -8,8 +8,8 @@ pipeline:
   webhook_secret_key: ATT_DEMO_KEY
   webhook_secret_val: foo-bar-123
   tools_namespace: cicd-tools
-  github_secret_username: malacourse
-  github_secret_token: 8a2e4d3a5b01004d54497090d2410f5990a49a01
+  github_secret_username: bWFsYWNvdXJzZQ==
+  github_secret_token: YmVhNzJkZmYyMGYyM2QwYjNhNWIxYTg1NDZiMDUxYzFhZTc1MjA2NQ==
 sonar:
   route: http://sonarqube-insecure-cicd-tools.apps.att-demo.ocp-labs.rhtelco.io
   username: admin
