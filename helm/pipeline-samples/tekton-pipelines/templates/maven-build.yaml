@@ -167,7 +167,7 @@ spec:
     - name: filePath
       value: "$(params.ARGO_RESOURCE_FILE_PATH)"
     - name: imageTag
-      value: "$(params.IMAGE_TAG)"
+      value: "$(tasks.get-build-id.results.build-id)"
     taskRef:
       name: create-pull-request
     resources:

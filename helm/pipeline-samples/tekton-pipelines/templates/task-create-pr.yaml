@@ -38,9 +38,11 @@ spec:
        GIT_URL=$(resources.inputs.source.url)
        echo "URL: $GIT_URL"
        GIT_PATH="${GIT_URL#*//}"
+       echo "GIT URL: git remote set-url origin https://$GIT_USERNAME:$GIT_TOKEN@$GIT_PATH"
        git remote set-url origin "https://$GIT_USERNAME:$GIT_TOKEN@$GIT_PATH"
        git config --global user.email "$GIT_USERNAME@redhat.com"
        git config --global user.name "$GIT_USERNAME"
+       git config credential.helper 'cache --timeout=30'
        mkdir ~/.config
        cat > ~/.config/hub << EOF3
        github.com:
@@ -48,6 +50,7 @@ spec:
          oauth_token: $GIT_TOKEN
          protocol: https
        EOF3
+       git fetch
        git checkout qa
        ls -lrt
        NEW_VAL=$(params.imageTag)
