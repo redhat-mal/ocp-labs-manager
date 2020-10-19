@@ -157,7 +157,7 @@ spec:
         - cel:
             filter: >-
               (header.match('X-GitHub-Event', 'push') &&
-               body.ref.startsWith('refs/heads/qa'))
+               body.ref == 'refs/heads/qa')
     bindings:
     - name: {{ .Release.Name }}-pipelinebinding
     template:

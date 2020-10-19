@@ -107,7 +107,7 @@ spec:
       - name: source
         resource: maven-build-image-pipeline-git
     runAfter:
-    - unit-test
+    - compile
   - name: get-version
     resources:
       inputs:
@@ -119,7 +119,7 @@ spec:
       - name: default-version
         value: "2.0"
     runAfter:
-    - sonar-scan
+    - compile
   - name: get-build-id
     taskRef:
       name: generate-build-id
@@ -147,6 +147,8 @@ spec:
         resource: maven-build-image-pipeline-git
     runAfter:
     - get-build-id
+    - sonar-scan
+    - unit-test
   - name: update-app-image-tag
     params:
     - name: appName
