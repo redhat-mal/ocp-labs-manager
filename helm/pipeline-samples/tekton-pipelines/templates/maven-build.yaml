@@ -50,6 +50,9 @@ spec:
     - name: IMAGE_TAG
       type: string
       default: latest
+    - name: ARGO_RESOURCE_FILE_PATH
+      type: string
+      default: "./.openshift/spring-boot-demo.yaml"
   resources:
   - name: maven-build-image-pipeline-git
     type: git
@@ -159,4 +162,18 @@ spec:
         resource: maven-build-image-pipeline-git
     runAfter:
     - build-image
+  - name: create-qa-pull-req
+    params:
+    - name: filePath
+      value: "$(params.ARGO_RESOURCE_FILE_PATH)"
+    - name: imageTag
+      value: "$(params.IMAGE_TAG)"
+    taskRef:
+      name: create-pull-request
+    resources:
+      inputs:
+      - name: source
+        resource: maven-build-image-pipeline-git
+    runAfter:
+    - update-app-image-tag
 
