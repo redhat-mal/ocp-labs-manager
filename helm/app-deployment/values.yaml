@@ -72,7 +72,7 @@ build:
   deploy: false
   namespace: labs-cicd
   image_stream_namespace: openshift
-  image_stream_name: openjdk-8-rhel8:1.2
+  image_stream_name: openjdk-11-rhel8:1.0
 
 pipeline:
   deploy: false
