@@ -1,0 +1,52 @@
+{{- $root := . -}}
+{{- if .Values.projects }}
+{{- range $proj := .Values.projects }}
+---
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: demo-project-quotas
+  namespace: {{ $proj.namespace }}
+spec:
+  hard:
+{{- if $proj.pods }}
+    pods: "{{ $proj.pods }}"
+{{- else }}
+    pods: "{{ $root.Values.defaults.pods }}"
+{{- end }}
+{{- if $proj.cpu_limit }}
+    limits.cpu: "{{ $proj.cpu_limit }}"
+{{- else }}
+    limits.cpu: "{{ $root.Values.defaults.cpu_limit }}"
+{{- end }}
+{{- if $proj.memory_limit }}
+    limits.memory: "{{ $proj.memory_limit }}"
+{{- else }}
+    limits.memory: "{{ $root.Values.defaults.memory_limit }}"
+{{- end }}
+---
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: demo-project-limits
+  namespace: {{ $proj.namespace }}
+spec:
+  limits:
+    - type: "Container"
+      max:
+        cpu: "2"
+        memory: "1Gi"
+      min:
+        cpu: "100m"
+        memory: "4Mi"
+      default:
+        cpu: "300m"
+        memory: "500Mi"
+      defaultRequest:
+        cpu: "200m"
+        memory: "100Mi"
+      maxLimitRequestRatio:
+        cpu: "10"
+{{- end }} 
+{{- end }}
+ 

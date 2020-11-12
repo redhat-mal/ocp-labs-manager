@@ -1,0 +1,12 @@
+{{- $root := . -}}
+{{- if .Values.projects }}
+{{- range $proj := .Values.projects }}
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    app.kubernetes.io/name: {{ $root.Release.Name }}
+  name: {{ $proj.namespace }}
+{{- end }}
+{{- end }}

@@ -1,0 +1,19 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: namespace-manager
+  namespace: cicd-tools
+spec:
+  destination:
+    namespace: cicd-tools
+    server: 'https://kubernetes.default.svc'
+  project: default
+  source:
+    helm:
+    path: helm/namespace-manager
+    repoURL: 'https://github.com/redhat-mal/ocp-labs-manager.git'
+    targetRevision: HEAD
+  syncPolicy:
+    automated: {}
+  
