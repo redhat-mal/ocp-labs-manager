@@ -6,7 +6,7 @@ metadata:
   namespace: {{ .Values.namespace }}
 spec: 
   targetNamespaces: 
-  - labs-cicd
+  - {{ .Values.namespace }}
 ---
 apiVersion: operators.coreos.com/v1alpha1
 kind: Subscription
