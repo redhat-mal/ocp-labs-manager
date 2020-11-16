@@ -29,8 +29,10 @@ spec:
     - name: helm_version
       description: "Specify a specific helm version"
       default: "latest"
-  workspaces:
+  resources:
+    inputs:
     - name: source
+      type: git
   steps:
     - name: upgrade
       image: docker.io/lachlanevenson/k8s-helm:$(inputs.params.helm_version)
