@@ -4,7 +4,7 @@
 
 
 defaults:
-  pods: "4"
+  pods: "2"
   cpu_limit: "2"
   memory_limit: "8Gi"
 
@@ -17,3 +17,5 @@ projects:
   - namespace: daves-dev
     owner: dkypuros
     pods: 6
+  - namespace: mikes-new-dev
+    owner: mikeldev
