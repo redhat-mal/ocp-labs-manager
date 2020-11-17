@@ -17,5 +17,3 @@ projects:
   - namespace: daves-dev
     owner: dkypuros
     pods: 6
-  - namespace: mikes-new-dev
-    owner: mikeldev
