@@ -35,13 +35,13 @@ spec:
     - type: "Container"
       max:
         cpu: "2"
-        memory: "1Gi"
+        memory: "2Gi"
       min:
         cpu: "200m"
         memory: "500Mi"
       default:
         cpu: "800m"
-        memory: "2Gi"
+        memory: "1Gi"
       defaultRequest:
         cpu: "200m"
         memory: "500Mi"
