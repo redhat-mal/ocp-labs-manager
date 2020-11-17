@@ -16,3 +16,4 @@ projects:
     owner: mikeldev
   - namespace: mikes-new-dev
     owner: mikeldev
+    pods: 5
