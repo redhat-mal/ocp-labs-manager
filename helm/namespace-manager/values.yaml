@@ -11,3 +11,4 @@ defaults:
 projects:
   - namespace: mikel-dev
     owner: mikeldev
+    pods: 6
