@@ -149,7 +149,7 @@ spec:
               (header.match('X-GitHub-Event', 'push') &&
                body.ref.startsWith('refs/heads/main'))          
     bindings:
-    - name: {{ .Release.Name }}-pipelinebinding
+    - ref: {{ .Release.Name }}-pipelinebinding
     template:
       name: {{ .Release.Name }}-build-triggertemplate
   - name: {{ .Release.Name }}-trigger-qa
@@ -159,7 +159,7 @@ spec:
               (header.match('X-GitHub-Event', 'push') &&
                body.ref == 'refs/heads/qa')
     bindings:
-    - name: {{ .Release.Name }}-pipelinebinding
+    - ref: {{ .Release.Name }}-pipelinebinding
     template:
       name: {{ .Release.Name }}-qa-triggertemplate
 ---
