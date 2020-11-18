@@ -27,8 +27,10 @@ spec:
       default: spring-boot-demo
     - name: TEST_ROUTE
       type: string
+      default: http://foo.com
     - name: TEST_RESULT
       type: string
+      default: "hello world"
   resources:
   - name: test-and-promote-pipeline-git
     type: git
