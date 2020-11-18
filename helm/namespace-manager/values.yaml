@@ -10,7 +10,4 @@ defaults:
 
 projects:
   - namespace: mikel-dev
-    pods: 6
-    memory_limit: 16Gi
-    cpu_limit: 4
     owner: mikeldev
