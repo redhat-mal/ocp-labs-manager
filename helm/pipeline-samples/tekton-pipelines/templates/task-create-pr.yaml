@@ -5,7 +5,7 @@ metadata:
   labels:
     app.kubernetes.io/name: mikes-test
   name: create-pull-request
-  namespace: att-pipelines
+  namespace: {{ .Values.pipeline.namespace }}
 spec:
   params:
     - name: filePath
@@ -18,7 +18,7 @@ spec:
       type: git
   steps:
   - name: create-pull-request
-    image: image-registry.openshift-image-registry.svc:5000/att-pipelines/pull-request-task:latest
+    image: image-registry.openshift-image-registry.svc:5000/{{ .Values.pipeline.namespace }}/pull-request-task:latest
     env:
     - name: GIT_USERNAME
       valueFrom:
