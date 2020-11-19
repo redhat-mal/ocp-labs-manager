@@ -51,6 +51,7 @@ spec:
          protocol: https
        EOF3
        git fetch
+       LAST_COMMIT=$(git log -1 --pretty=%B)
        git checkout qa
        ls -lrt
        NEW_VAL=$(params.imageTag)
@@ -64,5 +65,5 @@ spec:
        git branch -m qa-$(params.imageTag)
        git commit -m "Updating QA Tag to $(params.imageTag)"
        git push origin qa-$(params.imageTag):qa-$(params.imageTag)
-       hub pull-request -m qa-$(params.imageTag) -b qa
-       echo "Pull Request created for branch qa-$(params.imageTag)"
+       hub pull-request -m $LAST_COMMIT -b qa
+       echo "Pull Request created for [$LAST_COMMIT] on branch qa"
