@@ -11,6 +11,3 @@ defaults:
 projects:
   - namespace: user1-dev
     owner: user1
-  - namespace: mikel-dev
-    owner: mikeldev
-    pods: 8
