@@ -5,7 +5,7 @@
 
 defaults:
   pods: "4"
-  cpu_limit: "4"
+  cpu_limit: "16"
   memory_limit: "8Gi"
 
 projects:
