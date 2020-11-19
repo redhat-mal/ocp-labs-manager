@@ -38,15 +38,13 @@ spec:
         memory: "2Gi"
       min:
         cpu: "200m"
-        memory: "500Mi"
+        memory: "200Mi"
       default:
-        cpu: "800m"
+        cpu: "1"
         memory: "1Gi"
       defaultRequest:
         cpu: "200m"
         memory: "500Mi"
-      maxLimitRequestRatio:
-        cpu: "10"
 {{- end }} 
 {{- end }}
  
