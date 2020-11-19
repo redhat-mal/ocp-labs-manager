@@ -9,6 +9,5 @@ defaults:
   memory_limit: "8Gi"
 
 projects:
-  - namespace: mikel-dev
-    owner: mikeldev
-    pods: 4
+  - namespace: user1-dev
+    owner: user1
