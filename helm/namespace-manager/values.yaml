@@ -4,7 +4,7 @@
 
 
 defaults:
-  pods: "2"
+  pods: "4"
   cpu_limit: "4"
   memory_limit: "8Gi"
 
