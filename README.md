@@ -1,34 +1,92 @@
 # ocp-labs-manager
 
-subscription-manager register
-    7  subscription-manager -u mlacours@redhat.com
-    8  sudo subscription-manager register
-    9  sudo yum install git
-   10  ls
-   11  git clone https://github.com/redhat-mal/ocp-labs-manager.git
-   12  ls
-   13  rm -rf attlabs/
-   14  wget https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest-4.6/openshift-client-linux.tar.gz
-   15  sudo yum install wget -y
-   16  wget https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest-4.6/openshift-client-linux.tar.gz
-   17  wget https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest-4.6/openshift-install-linux.tar.gz
-   18  ls -lrt
-   19  tar -xvf ./openshift-client-linux.tar.gz 
-   20  sudo mv oc /usr/local/bin
-   21  sudo mv kubectl /usr/local/bin
-   22  ls
-   23  oc version
-   24  tar -xvf ./openshift-install-linux.tar.gz 
-   25  ls
-   26  pwd
-   27  sudo mv openshift-install /usr/local/bin
-   28  cd ocp-labs-manager/
-   29  ls
-   30  openshift-install
-   31  openshift-install create config
-   32  openshift-install create install-config
-   33  ls
-   34  vi install-config.yaml 
-   35  rm install-config.yaml 
-   36  ls
-   37  ./config/ocp-demo-cluster/install.sh ./config/ocp-demo-cluster/
+
+## Setup an AWS instanct to install OCP and Pipeline Demo
+
+### Configure an AWS Instance in the Desired Region and Create AWS Keys 
+
+1. Launch a "Red Hat Enterprise Linux 8" instance with size of t2.medium or larger.  
+- add tags to ensure it is retained: 
+    Contact	<email address>
+    AlwaysUp	True
+    DeleteBy	Never
+    Name	< worker instance >
+
+2. Create a AWS Key for your User
+
+Use the AWW console IAM service and navigate to your user account and use the "Security Credentials" tab to create access keys.  Save the keys for later use.
+
+3. Create a SSH key for the instance
+
+When launching the instance either use an existing ssh key set or create a new key and download the public key.
+
+
+### Conifigure the AWS instance to allow installs
+
+1. ssh to the instance 
+
+```
+ ~/.ssh/<your key>  ec2-user@<your instance public dns>
+```
+
+2. Setup AWS Credentials
+
+```
+cat > ~/.aws/credentials << EOF
+[default]
+aws_access_key_id = <your key ID>
+aws_secret_access_key = <your key>
+EOF
+```
+
+#### Configure Required tools
+
+```
+sudo subscription-manager register
+sudo yum install git -y
+sudo yum install wget -y
+```
+
+Install Helm3
+```
+sudo dnf install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
+sudo yum install snapd
+
+## Wait for a minute
+sudo snap install helm3
+```
+
+Clone the labs manager repo
+'''
+git clone https://github.com/redhat-mal/ocp-labs-manager.git
+'''
+
+Download and configure openshift installer with desired version
+```
+wget https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest-4.6/openshift-client-linux.tar.gz
+wget https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest-4.6/openshift-install-linux.tar.gz
+tar -xvf ./openshift-client-linux.tar.gz 
+sudo mv oc /usr/local/bin
+sudo mv kubectl /usr/local/bin
+tar -xvf ./openshift-install-linux.tar.gz 
+sudo mv openshift-install /usr/local/bin
+```
+
+### Install OCP Cluster 
+
+```
+cd ocp-labs-manager/
+./config/ocp-demo-cluster/install.sh ./config/ocp-demo-cluster/
+```
+
+### Run cluster config after install to setiup htpasswd
+```
+ ./config/cluster-config/install.sh cicd-tools
+ ```
+
+### Install Pipeeline and ArgoCD operator
+```
+./config/pipeline-operators/install.sh cicd-tools ./config/pipeline-operators/
+```
+
+
