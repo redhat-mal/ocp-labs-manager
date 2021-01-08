@@ -89,4 +89,20 @@ cd ocp-labs-manager/
 ./config/pipeline-operators/install.sh cicd-tools ./config/pipeline-operators/
 ```
 
+### Install ArgoCd and SonarQube
+
+```
+cd ocp-labs-manager/helm/lab-pipeline-tools/pipeline-tools/
+oc login https://api.att-demo.ocp-labs.rhtelco.io:6443
+oc project cicd-tools
+helm install cicd-tools .
+```
+
+### Configure Demo Pipelines in ArgoCD
+```
+cd helm/argo-applications/
+helm template pipelines . | oc apply -f-
+```
+
+
 
