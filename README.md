@@ -104,5 +104,54 @@ cd helm/argo-applications/
 helm template pipelines . | oc apply -f-
 ```
 
+### Configure Sample Spring App Pipeline
+
+Fork the spirng app repo to your account: https://github.com/redhat-mal/spring-rest-service.git
+
+
+```
+git clone https://github.com/<your account>/spring-rest-service.git
+cd spring-rest-service
+git fetch
+
+# Deploy Argo App for Staging
+git checkout stage
+
+# Modify line 36 to point to your github repo
+oc apply -f- .openshift/spring-boot-demo.yaml
+
+# Deploy Argo App for qa
+git checkout qa
+
+# Modify line 24 to point to your github repo
+oc apply -f- .openshift/spring-boot-demo.yaml
+
+```
+### Configure Webhook in Github using tekton event handler
+
+```
+oc get route -n att-pipelines
+```
+
+Go to the github repo and select settings/webhooks
+Create a new webhook with key of "ATT_DEMO_KEY" and the url of route.
+Content type: application/json
+
+![Github Webhook](github_wh.png)
+
+
+### Modify app to initiate the build and deploy pipeline
+
+
+```
+# Deploy Argo App for Staging
+git checkout main
+
+# Modify any file 
+git commit -m "some message"
+git push
+
+```
+
 
 
