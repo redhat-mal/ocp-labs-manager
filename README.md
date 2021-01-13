@@ -49,18 +49,10 @@ sudo yum install wget -y
 
 Install Helm3
 ```
-sudo dnf install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
-sudo yum install snapd
-
-## Wait for a minute
-sudo snap install helm3
+sudo curl -L https://mirror.openshift.com/pub/openshift-v4/clients/helm/latest/helm-linux-amd64 -o /usr/local/bin/helm
+sudo chmod +x /usr/local/bin/helm
+helm version
 ```
-
-Clone the labs manager repo
-'''
-git clone https://github.com/redhat-mal/ocp-labs-manager.git
-'''
-
 Download and configure openshift installer with desired version
 ```
 wget https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest-4.6/openshift-client-linux.tar.gz
@@ -74,35 +66,26 @@ sudo mv openshift-install /usr/local/bin
 
 ### Install OCP Cluster 
 
+Clone the labs manager repo
+
+'''
+git clone https://github.com/redhat-mal/ocp-labs-manager.git
+'''
+
+
+Modify install-config.yaml under the path ocp-labs-manager/config/ocp-demo-cluster/ocp-config.
+- Modify the name of the cluster on line 29
+- 
+
 ```
 cd ocp-labs-manager/
 ./config/ocp-demo-cluster/install.sh ./config/ocp-demo-cluster/
 ```
 
-### Run cluster config after install to setiup htpasswd
+### Run pipeline setup script to configure cluster auth and setup pipeline tools
 ```
- ./config/cluster-config/install.sh cicd-tools
+ ./setup_pipelines.sh
  ```
-
-### Install Pipeeline and ArgoCD operator
-```
-./config/pipeline-operators/install.sh cicd-tools ./config/pipeline-operators/
-```
-
-### Install ArgoCd and SonarQube
-
-```
-cd ocp-labs-manager/helm/lab-pipeline-tools/pipeline-tools/
-oc login https://api.att-demo.ocp-labs.rhtelco.io:6443
-oc project cicd-tools
-helm install cicd-tools .
-```
-
-### Configure Demo Pipelines in ArgoCD
-```
-cd helm/argo-applications/
-helm template pipelines . | oc apply -f-
-```
 
 ### Configure Sample Spring App Pipeline
 
@@ -114,19 +97,23 @@ git clone https://github.com/<your account>/spring-rest-service.git
 cd spring-rest-service
 git fetch
 
-# Deploy Argo App for Staging
+# Modify repo for staging deployment
 git checkout stage
+# Modify line 36 to point to your github repo  and commit and push
+git commit -m "fix repo"
+git push origin stage:stage
 
-# Modify line 36 to point to your github repo
-oc apply -f- .openshift/spring-boot-demo.yaml
-
-# Deploy Argo App for qa
+# Modify repo for qa deployment
 git checkout qa
+# Modify line 24 to point to your github repo  and commit and push
+git commit -m "fix repo"
+git push origin qa:qa
 
-# Modify line 24 to point to your github repo
-oc apply -f- .openshift/spring-boot-demo.yaml
 
-```
+# Configure Argo Apps
+ ./setup_pipelines.sh
+ ```
+
 ### Configure Webhook in Github using tekton event handler
 
 ```
