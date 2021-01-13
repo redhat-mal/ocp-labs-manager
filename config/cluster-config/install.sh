@@ -8,11 +8,5 @@ if [ $? -eq 1 ];then
   oc new-project $1
 fi
 
-cat > $2/install-status << EOF
-installing
-EOF
 helm template cluster-config ./helm/cluster-configuration/ --set namespace=$1 | oc apply -f-
-cat > $2/install-status << EOF2
-installed
-EOF2
 

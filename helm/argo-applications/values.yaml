@@ -2,7 +2,8 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-tools_namespace: labs-cicd
+tools_namespace: cicd-tools
 pipeline_namespace: att-pipelines
+sonar_route: http://sonarqube-insecure-att-pipelines.apps.att-demo.ocp-labs.rhtelco.io
 
 

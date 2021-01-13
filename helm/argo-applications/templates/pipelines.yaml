@@ -14,7 +14,7 @@ spec:
       parameters:
         - name: sonar.route
           value: >-
-            http://sonarqube-insecure-{{ .Values.tools_namespace }}.apps.att-demo.ocp-labs.rhtelco.io
+            {{ .Values.sonar_route }}
         - name: pipeline.tools_namespace
           value: {{ .Values.tools_namespace }}
     path: helm/pipeline-samples/tekton-pipelines
