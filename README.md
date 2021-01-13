@@ -79,7 +79,7 @@ Modify install-config.yaml under the path ocp-labs-manager/config/ocp-demo-clust
 
 ```
 cd ocp-labs-manager/
-./config/ocp-demo-cluster/install.sh ./config/ocp-demo-cluster/
+./config/ocp-demo-cluster/install.sh 
 ```
 
 ### Run pipeline setup script to configure cluster auth and setup pipeline tools
@@ -140,5 +140,11 @@ git push
 
 ```
 
+## To Destory the Cluster
+
+```
+cd ocp-labs-manager/
+./config/ocp-demo-cluster/destory.sh 
+```
 
 
