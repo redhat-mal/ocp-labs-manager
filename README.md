@@ -32,6 +32,8 @@ When launching the instance either use an existing ssh key set or create a new k
 2. Setup AWS Credentials
 
 ```
+mkdir ~/.aws
+
 cat > ~/.aws/credentials << EOF
 [default]
 aws_access_key_id = <your key ID>
@@ -39,7 +41,7 @@ aws_secret_access_key = <your key>
 EOF
 ```
 
-#### Configure Required tools
+#### Configure Required tools (One Time)
 
 ```
 sudo subscription-manager register
@@ -68,9 +70,9 @@ sudo mv openshift-install /usr/local/bin
 
 Clone the labs manager repo
 
-'''
+```
 git clone https://github.com/redhat-mal/ocp-labs-manager.git
-'''
+```
 
 
 Modify install-config.yaml under the path ocp-labs-manager/config/ocp-demo-cluster/ocp-config.
@@ -82,12 +84,29 @@ cd ocp-labs-manager/
 ./config/ocp-demo-cluster/install.sh 
 ```
 
+### Configure Github token for Pipelines to create pull request. (One Time)
+
+Go to Github and navigate to settins -> Developer Settings
+Navigate to "Personal Access Tokens"
+
+Select "Generate new token"
+
+Enable the Repo access the select "Generate"
+Copy the value of the token
+
+Run the following command and copy the output
+```
+export MY_GIT_TOKEN=$(echo "your token" | base64 --wrap=0)
+export MY_GIT_TOKEN=$(echo "your username" | base64 --wrap=0)
+
+```
+
 ### Run pipeline setup script to configure cluster auth and setup pipeline tools
 ```
  ./setup_pipelines.sh
  ```
 
-### Configure Sample Spring App Pipeline
+### Configure Sample Spring App Pipeline (One Time)
 
 Fork the spirng app repo to your account: https://github.com/redhat-mal/spring-rest-service.git
 
@@ -99,13 +118,17 @@ git fetch
 
 # Modify repo for staging deployment
 git checkout stage
+vim .openshift/spring-boot-demo.yaml
 # Modify line 36 to point to your github repo  and commit and push
+git add .openshift/spring-boot-demo.yaml
 git commit -m "fix repo"
 git push origin stage:stage
 
 # Modify repo for qa deployment
 git checkout qa
+vim .openshift/spring-boot-demo.yaml
 # Modify line 24 to point to your github repo  and commit and push
+git add .openshift/spring-boot-demo.yaml
 git commit -m "fix repo"
 git push origin qa:qa
 
@@ -114,7 +137,7 @@ git push origin qa:qa
  ./setup_pipelines.sh
  ```
 
-### Configure Webhook in Github using tekton event handler
+### Configure Webhook in Github using tekton event handler (One Time)
 
 ```
 oc get route -n att-pipelines
@@ -134,11 +157,18 @@ Content type: application/json
 # Deploy Argo App for Staging
 git checkout main
 
-# Modify any file 
+# Modify the pom.xml and change version 
+git add pom.xml
 git commit -m "some message"
 git push
 
 ```
+
+### Merge Pull request in the spring app to promote to QA
+
+Naviagate to the pull request tab for the spring-rest-service project
+Merge the open pull request
+
 
 ## To Destory the Cluster
 
