@@ -140,6 +140,7 @@ spec:
     - /usr/bin/mvn
     args:
     - -Dmaven.repo.local=$(workspaces.maven-repo.path)
+    - clean
     - package
   - name: make-upload-dir
     image: quay.io/openshift-pipeline/openshift-cli:latest
