@@ -39,7 +39,7 @@ spec:
        echo "URL: $GIT_URL"
        GIT_PATH="${GIT_URL#*//}"
 
-       NEW_URL=$(echo git remote set-url origin https://$GIT_USERNAME:$GIT_TOKEN@$GIT_PATH|tr -d '\n')
+       NEW_URL=$(echo git remote set-url origin https://$GIT_USERNAME:$GIT_TOKEN@$GIT_PATH|tr -d ' \n')
        echo "GIT NEW URL: $NEW_URL"
        $NEW_URL
        git config --global user.email "$GIT_USERNAME@redhat.com"
