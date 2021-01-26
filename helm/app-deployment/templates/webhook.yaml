@@ -21,8 +21,8 @@ spec:
       kind: PipelineResource
       metadata:
         name: test-and-promote-pipeline-$(uid)
-      labels:
-        app.kubernetes.io/name: {{ .Release.Name }}
+        labels:
+          app.kubernetes.io/name: {{ .Release.Name }}
       spec:
         type: git
         params:
@@ -86,8 +86,8 @@ spec:
       kind: PipelineResource
       metadata:
         name: maven-build-image-pipeline-git-$(uid)
-      labels:
-        app.kubernetes.io/name: {{ .Release.Name }}
+        labels:
+          app.kubernetes.io/name: {{ .Release.Name }}
       spec:
         type: git
         params:
