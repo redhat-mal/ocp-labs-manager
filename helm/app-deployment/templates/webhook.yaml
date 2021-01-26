@@ -5,6 +5,8 @@ kind: TriggerTemplate
 metadata:
   name: {{ .Release.Name }}-qa-triggertemplate
   namespace: {{ .Values.pipeline.namespace }}
+  labels:
+    app.kubernetes.io/name: {{ .Release.Name }}
 spec:
   params:
     - name: gitrevision
@@ -70,6 +72,8 @@ kind: TriggerTemplate
 metadata:
   name: {{ .Release.Name }}-build-triggertemplate
   namespace: {{ .Values.pipeline.namespace }}
+  labels:
+    app.kubernetes.io/name: {{ .Release.Name }}
 spec:
   params:
     - name: gitrevision
