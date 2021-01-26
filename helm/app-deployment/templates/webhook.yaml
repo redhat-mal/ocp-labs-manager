@@ -99,6 +99,8 @@ spec:
         name: {{ .Release.Name }}-build-pipeline-run-$(uid)
         annotations:
           argocd.argoproj.io/compare-options: IgnoreExtraneous
+        labels:
+          app.kubernetes.io/name: {{ .Release.Name }}
       spec:
         pipelineRef:
           name: maven-build-image-pipeline
