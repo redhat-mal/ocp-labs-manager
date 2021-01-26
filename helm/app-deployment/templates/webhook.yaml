@@ -6,7 +6,7 @@ metadata:
   name: {{ .Release.Name }}-qa-triggertemplate
   namespace: {{ .Values.pipeline.namespace }}
   labels:
-    app.kubernetes.io/name: {{ .Release.Name }}
+    app.pelorus/name: {{ .Release.Name }}
 spec:
   params:
     - name: gitrevision
@@ -24,7 +24,7 @@ spec:
       metadata:
         name: test-and-promote-pipeline-$(uid)
         labels:
-          app.kubernetes.io/name: {{ .Release.Name }}
+          app.pelorus/name: {{ .Release.Name }}
       spec:
         type: git
         params:
@@ -39,7 +39,7 @@ spec:
       metadata:
         name: {{ .Release.Name }}-qa-pipeline-run-$(uid)
         labels:
-          app.kubernetes.io/name: {{ .Release.Name }}
+          app.pelorus/name: {{ .Release.Name }}
         annotations:
           argocd.argoproj.io/compare-options: IgnoreExtraneous        
       spec:
@@ -73,7 +73,7 @@ metadata:
   name: {{ .Release.Name }}-build-triggertemplate
   namespace: {{ .Values.pipeline.namespace }}
   labels:
-    app.kubernetes.io/name: {{ .Release.Name }}
+    app.pelorus/name: {{ .Release.Name }}
 spec:
   params:
     - name: gitrevision
@@ -91,7 +91,7 @@ spec:
       metadata:
         name: maven-build-image-pipeline-git-$(uid)
         labels:
-          app.kubernetes.io/name: {{ .Release.Name }}
+          app.pelorus/name: {{ .Release.Name }}
       spec:
         type: git
         params:
@@ -108,7 +108,7 @@ spec:
         annotations:
           argocd.argoproj.io/compare-options: IgnoreExtraneous
         labels:
-          app.kubernetes.io/name: {{ .Release.Name }}
+          app.pelorus/name: {{ .Release.Name }}
       spec:
         pipelineRef:
           name: maven-build-image-pipeline
@@ -137,6 +137,8 @@ kind: TriggerBinding
 metadata:
   name: {{ .Release.Name }}-pipelinebinding
   namespace: {{ .Values.pipeline.namespace }}
+  labels:
+    app.pelorus/name: {{ .Release.Name }}
 spec:
   params:
     - name: gitrevision

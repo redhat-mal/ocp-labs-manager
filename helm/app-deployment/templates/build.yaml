@@ -5,6 +5,7 @@ kind: ImageStream
 metadata:
   labels:
     app.kubernetes.io/name: {{ .Release.Name }}
+    app.pelorus/name: {{ .Release.Name }}
   name: {{ .Values.application_name }}
   namespace: {{ .Values.build.namespace }}
 ---
@@ -13,6 +14,7 @@ kind: BuildConfig
 metadata:
   labels:
     app.kubernetes.io/name: {{.Release.Name }}
+    app.pelorus/name: {{ .Release.Name }}
   name: {{ .Values.application_name }}
   namespace: {{ .Values.build.namespace }}
 spec:
