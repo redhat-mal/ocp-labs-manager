@@ -3,6 +3,7 @@ kind: DeploymentConfig
 metadata:
   labels:
     app.kubernetes.io/name: {{ .Release.Name }}
+    app.pelorus/name: {{ .Release.Name }}
   name: {{ .Release.Name }}
   namespace: {{ .Values.namespace }}
   annotations:
@@ -17,6 +18,7 @@ spec:
       labels:
         application: {{ .Release.Name }}
         deploymentConfig: {{ .Release.Name }}
+        app.pelorus/name: {{ .Release.Name }}
       name: {{ .Release.Name }}
     spec:
       containers:
