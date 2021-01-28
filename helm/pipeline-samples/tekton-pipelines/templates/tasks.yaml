@@ -170,6 +170,7 @@ spec:
        #!/usr/bin/env bash
        echo "Hello from Bash!"
        ls -lrta .
+       git status
        /usr/local/bin/oc start-build $(params.appName) --from-dir=./upload --wait
     #args:
     # - '-c'
