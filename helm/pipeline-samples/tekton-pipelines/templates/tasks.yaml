@@ -159,7 +159,7 @@ spec:
     command: ["/bin/bash"]
     args:
       - '-c'
-      - ls -lrt ./.git
+      - ls -lrta .
   - name: oc-binary-build
     image: quay.io/openshift-pipeline/openshift-cli:latest
     command: ["/usr/local/bin/oc"]
