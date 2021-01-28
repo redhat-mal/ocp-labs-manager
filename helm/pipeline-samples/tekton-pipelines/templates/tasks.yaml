@@ -154,6 +154,12 @@ spec:
     args:
       - '-c'
       - cp /workspace/source/target/$(params.resourceFilter) /workspace/source/upload
+  - name: git-debug
+    image: quay.io/openshift-pipeline/openshift-cli:latest
+    command: ["/bin/bash"]
+    args:
+      - '-c'
+      - ls -lrt ./.git
   - name: oc-binary-build
     image: quay.io/openshift-pipeline/openshift-cli:latest
     command: ["/usr/local/bin/oc"]
