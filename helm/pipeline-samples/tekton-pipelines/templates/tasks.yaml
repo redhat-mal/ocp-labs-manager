@@ -163,17 +163,24 @@ spec:
       - ls -lrta .
   - name: oc-binary-build
     image: quay.io/openshift-pipeline/openshift-cli:latest
-    command: ["/usr/local/bin/oc"]
+    #command: ["/usr/local/bin/oc"]
+    #command: ["/bin/bash"]
     workingDir: /workspace/source
-    args:
-    - start-build
-    - -w
-    - -F
-    - $(params.appName)
-    - -n
-    - $(params.fromNamespace)
-    - --from-dir
-    - "./upload"
+    script: |
+       #!/usr/bin/env bash
+       echo "Hello from Bash!"
+       ls -lrta .
+       /usr/local/bin/oc start-build $(params.appName) --from-dir=./upload --wait
+    #args:
+    # - '-c'
+    #- start-build
+    #- -w
+    #- -F
+    #- $(params.appName)
+    #- -n
+    #- $(params.fromNamespace)
+    #- --from-dir
+    #- "./upload"
   - name: oc-tag-build-image
     image: quay.io/openshift-pipeline/openshift-cli:latest
     command: ["/usr/local/bin/oc"]
