@@ -156,6 +156,7 @@ spec:
       - cp /workspace/source/target/$(params.resourceFilter) /workspace/source/upload
   - name: git-debug
     image: quay.io/openshift-pipeline/openshift-cli:latest
+    workingDir: /workspace/source
     command: ["/bin/bash"]
     args:
       - '-c'
