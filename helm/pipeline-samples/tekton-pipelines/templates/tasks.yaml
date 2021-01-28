@@ -157,7 +157,7 @@ spec:
   - name: oc-binary-build
     image: quay.io/openshift-pipeline/openshift-cli:latest
     command: ["/usr/local/bin/oc"]
-    workingDir: /workspace/source/upload
+    workingDir: /workspace/source
     args:
     - start-build
     - -w
@@ -166,7 +166,7 @@ spec:
     - -n
     - $(params.fromNamespace)
     - --from-dir
-    - "."
+    - "./upload"
   - name: oc-tag-build-image
     image: quay.io/openshift-pipeline/openshift-cli:latest
     command: ["/usr/local/bin/oc"]
