@@ -17,6 +17,10 @@ spec:
             {{ .Values.sonar_route }}
         - name: pipeline.tools_namespace
           value: {{ .Values.tools_namespace }}
+        - name: pipeline.github_secret_username
+          value: {{ .Values.github_secret_username }}
+        - name: pipeline.github_secret_token
+          value: {{ .Values.github_secret_token }}
     path: helm/pipeline-samples/tekton-pipelines
     repoURL: 'https://github.com/redhat-mal/ocp-labs-manager.git'
     targetRevision: HEAD
