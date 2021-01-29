@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 echo "Applying Cluster Config" 
-export KUBECONFIG=./config/ocp-demo-cluster/ocp-install/auth/kubeconfig
-oc login -u system:admin
 oc get project $1
 
 if [ $? -eq 1 ];then

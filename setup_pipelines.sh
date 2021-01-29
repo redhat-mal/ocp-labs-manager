@@ -1,10 +1,23 @@
 #!/usr/bin/env bash
+if [[ -z "$MY_GIT_USERNAME" ]]; then
+    echo "Must provide MY_GIT_USERNAME  base64 encyptyed the in environment" 1>&2
+    exit 1
+fi
+if [[ -z "$MY_GIT_TOKEN" ]]; then
+    echo "Must provide MY_GIT_TOKEN  base64 encyptyed the in environment" 1>&2
+    exit 1
+fi
+OC_STATUS=$(oc whoami)
+if [[ -z "$OC_STATUS" ]]; 
+then
+  echo "Must be logged into a Cluster"
+  exit 1
+fi
+
 ./config/cluster-config/install.sh cicd-tools
 ./config/pipeline-operators/install.sh cicd-tools
 sleep 60s
 echo "Installing Pipeline" 
-export KUBECONFIG=./config/ocp-demo-cluster/ocp-install/auth/kubeconfig
-oc login -u system:admin
 oc project cicd-tools
 helm install cicd-tools ./helm/lab-pipeline-tools/pipeline-tools/
 
