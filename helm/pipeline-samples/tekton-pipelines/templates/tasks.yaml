@@ -162,7 +162,8 @@ spec:
       - '-c'
       - ls -lrta .
   - name: oc-binary-build
-    image: quay.io/openshift-pipeline/openshift-cli:latest
+    #image: quay.io/openshift-pipeline/openshift-cli:latest
+    image: image-registry.openshift-image-registry.svc:5000/{{ .Values.pipeline.namespace }}/pull-request-task:latest
     #command: ["/usr/local/bin/oc"]
     #command: ["/bin/bash"]
     workingDir: /workspace/source
