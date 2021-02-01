@@ -67,5 +67,10 @@ spec:
        git branch -m qa-$(params.imageTag)
        git commit -m "Updating QA Tag to $(params.imageTag)"
        git push origin qa-$(params.imageTag):qa-$(params.imageTag)
+       if [[ $? -ne 0 ]]; 
+       then
+         echo "Failed Creating PR, most likely invalid Git Token"
+         exit 1
+       fi
        hub pull-request -m "$LAST_COMMIT" -b qa
        echo "Pull Request created for [$LAST_COMMIT] on branch qa"
