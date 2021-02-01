@@ -96,8 +96,8 @@ Copy the value of the token
 
 Run the following command and copy the output
 ```
-export MY_GIT_TOKEN=$(echo "your token" | base64 --wrap=0)
-export MY_GIT_USERNAME=$(echo "your username" | base64 --wrap=0)
+export MY_GIT_TOKEN="your token"
+export MY_GIT_USERNAME="your username"
 
 ```
 
