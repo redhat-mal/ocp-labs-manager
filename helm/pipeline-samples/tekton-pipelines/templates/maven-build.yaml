@@ -162,7 +162,7 @@ spec:
     taskRef:
       name: send-to-google-chat
     runAfter:
-    - create-pull-request
+    - create-qa-pull-req
 
 
 
