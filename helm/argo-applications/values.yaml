@@ -5,6 +5,5 @@
 tools_namespace: cicd-tools
 pipeline_namespace: att-pipelines
 sonar_route: http://sonarqube-insecure-att-pipelines.apps.att-demo.ocp-labs.rhtelco.io
-pipeline.googlechat_token: false
-
+googlechat_secret: false
 
