@@ -16,6 +16,10 @@ spec:
     type: string
     description: plain text message
   steps:
+  - name: token-secret
+    type: string
+    description: name of secret containing google chat token and channel
+  steps:
   - name: post
     image: image-registry.openshift-image-registry.svc:5000/{{ .Values.pipeline.namespace }}/pull-request-task:latest 
     script: |
