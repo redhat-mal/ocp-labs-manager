@@ -153,6 +153,7 @@ spec:
         resource: maven-build-image-pipeline-git
     runAfter:
     - update-app-image-tag
+{{- if .Values.pipeline.googlechat_enabled  }}
   - name: notify-googlechat
     params:
     - name: token-secret
@@ -163,7 +164,7 @@ spec:
       name: send-to-google-chat
     runAfter:
     - create-qa-pull-req
-
+{{ -end }}
 
 
 
