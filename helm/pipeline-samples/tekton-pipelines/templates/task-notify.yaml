@@ -1,0 +1,42 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: send-to-google-chat
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/tags: messaging
+spec:
+  description: >-
+    These tasks post a simple message to a google chat channel.
+
+  params:
+  - name: message
+    type: string
+    description: plain text message
+  steps:
+  - name: post
+    image: image-registry.openshift-image-registry.svc:5000/{{ .Values.pipeline.namespace }}/pull-request-task:latest 
+    script: |
+      #!/bin/sh
+      curl  -X POST  -H 'Content-Type: application/json' 'https://chat.googleapis.com/v1/spaces/$CHANNEL/messages?key=$KEY&token=$TOKEN'  -d '{"text": "$(params.message)"}'
+      ##/usr/bin/curl -X POST -H 'Content-type: application/json' -H 'Authorization: Bearer '$TOKEN --data '{"channel":"$CHANNEL", "text":"$(params.message)"}' https://slack.com/api/chat.postMessage
+    env:
+    - name: TOKEN
+      valueFrom:
+        secretKeyRef:
+          name: $(params.token-secret)
+          key: token
+    - name: KEY
+      valueFrom:
+        secretKeyRef:
+          name: $(params.token-secret)
+          key: key
+    - name: CHANNEL
+      valueFrom:
+        secretKeyRef:
+          name: $(params.token-secret)
+          key: channel
+
+
