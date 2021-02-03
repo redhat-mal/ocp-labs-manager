@@ -23,7 +23,11 @@ spec:
     image: image-registry.openshift-image-registry.svc:5000/{{ .Values.pipeline.namespace }}/pull-request-task:latest 
     script: |
       #!/bin/sh
-      curl  -X POST  -H 'Content-Type: application/json' "https://chat.googleapis.com/v1/spaces/$CHANNEL/messages?key=$KEY&token=$TOKEN"  -d '{"text": "$(params.message)"}'
+      if [ "$(params.token-secret)" -neq "None" ]]; then 
+        curl  -X POST  -H 'Content-Type: application/json' "https://chat.googleapis.com/v1/spaces/$CHANNEL/messages?key=$KEY&token=$TOKEN"  -d '{"text": "$(params.message)"}'
+      else
+        echo "No Google Chat Channel values specified, Skipping"
+      fi 
     env:
     - name: TOKEN
       valueFrom:

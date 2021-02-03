@@ -159,10 +159,6 @@ spec:
       value: "$(params.GOOGLE_CHAT_SECRET)"
     - name: message
       value: "Pipeline run complete for $(params.APP_NAME), App can be promted to QA by approving the pull request: $(tasks.create-qa-pull-req.results.pull-request)"
-    when:
-      - input: "$(params.GOOGLE_CHAT_SECRET)"
-        operator: notin
-        values: ["None"]
     taskRef:
       name: send-to-google-chat
     runAfter:
