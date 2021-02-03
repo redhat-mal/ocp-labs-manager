@@ -16,6 +16,9 @@ spec:
     inputs:
     - name: source
       type: git
+  results:
+    - name: pull-request
+      description: Path of generated pull request
   steps:
   - name: create-pull-request
     image: image-registry.openshift-image-registry.svc:5000/{{ .Values.pipeline.namespace }}/pull-request-task:latest
@@ -72,5 +75,7 @@ spec:
          echo "Failed Creating PR, most likely invalid Git Token"
          exit 1
        fi
-       hub pull-request -m "$LAST_COMMIT" -b qa
+       HUB_RESULT=$(hub pull-request -m "$LAST_COMMIT" -b qa)
+       echo "Hub Result is $HUB_RESULT"
        echo "Pull Request created for [$LAST_COMMIT] on branch qa"
+       echo ${HUB_RESULT} | tr -d "\n" | tee $(results.pull-request.path)
