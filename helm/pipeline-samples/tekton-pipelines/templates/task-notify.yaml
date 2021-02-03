@@ -23,8 +23,7 @@ spec:
     image: image-registry.openshift-image-registry.svc:5000/{{ .Values.pipeline.namespace }}/pull-request-task:latest 
     script: |
       #!/bin/sh
-      curl  -X POST  -H 'Content-Type: application/json' 'https://chat.googleapis.com/v1/spaces/$CHANNEL/messages?key=$KEY&token=$TOKEN'  -d '{"text": "$(params.message)"}'
-      ##/usr/bin/curl -X POST -H 'Content-type: application/json' -H 'Authorization: Bearer '$TOKEN --data '{"channel":"$CHANNEL", "text":"$(params.message)"}' https://slack.com/api/chat.postMessage
+      curl  -X POST  -H 'Content-Type: application/json' "https://chat.googleapis.com/v1/spaces/$CHANNEL/messages?key=$KEY&token=$TOKEN"  -d '{"text": "$(params.message)"}'
     env:
     - name: TOKEN
       valueFrom:
