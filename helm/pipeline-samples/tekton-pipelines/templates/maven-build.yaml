@@ -164,7 +164,4 @@ spec:
       name: send-to-google-chat
     runAfter:
     - create-qa-pull-req
-{{ - end }}
-
-
-
+{{- end }}
