@@ -1,0 +1,63 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  labels:
+    app.kubernetes.io/name: {{ .Release.Name }}
+  name: update-repo-image-tag
+  namespace: {{ .Values.pipeline.namespace }}
+spec:
+  params:
+    - name: filePath
+      description: The expected value
+    - name: imageTag
+      description: The url to curl
+  resources:
+    inputs:
+    - name: source
+      type: git
+  steps:
+  - name: update-values-file
+    image: image-registry.openshift-image-registry.svc:5000/{{ .Values.pipeline.namespace }}/pull-request-task:latest
+    env:
+    - name: GIT_USERNAME
+      valueFrom:
+        secretKeyRef:
+          name: github-secret
+          key: username
+    - name: GIT_TOKEN
+      valueFrom:
+        secretKeyRef:
+          name: github-secret
+          key: token
+    script: |
+       #!/usr/bin/env bash
+       echo "Hello from Bash!"
+       cd source 
+       echo "Updating file: $(params.filePath)"
+       GIT_URL=$(resources.inputs.source.url)
+       echo "URL: $GIT_URL"
+       GIT_PATH="${GIT_URL#*//}"
+
+       NEW_URL=$(echo https://$GIT_USERNAME:$GIT_TOKEN@$GIT_PATH|tr -d ' \n')
+       echo "GIT NEW URL: $NEW_URL"
+       git remote set-url origin $NEW_URL
+       git config --global user.email "$GIT_USERNAME@redhat.com"
+       git config --global user.name "$GIT_USERNAME"
+       git config credential.helper 'cache --timeout=30'
+       ls -lrt $(params.filePath)
+       NEW_VAL=$(params.imageTag)
+       REPLACE_VAL=$(awk '/name: image_tag/{getline; print}' $(params.filePath))
+       REPLACE_VAL=${REPLACE_VAL#*:}
+       echo "FOO: $REPLACE_VAL"
+       sed -i "s/$REPLACE_VAL/ $NEW_VAL/" $(params.filePath)
+       cat $(params.filePath)
+       git add $(params.filePath)
+       git commit -m "Tekton Pipeline automation update image to: $(params.imageTag)"
+       git push origin 
+       if [[ $? -ne 0 ]]; 
+       then
+         echo "Failed Creating PR, most likely invalid Git Token"
+         exit 1
+       fi
+       echo "Image tag updated"

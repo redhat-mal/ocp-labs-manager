@@ -3,7 +3,6 @@
 # Declare variables to be passed into your templates.
 
 namespace: att-demo
-namespace_qa: att-qa
 application_tag: latest
 application_name: spring-rest-demo
 
@@ -45,8 +44,6 @@ probes:
     timeoutSeconds: 10
 
 build:
-  deploy: false
-  namespace: labs-cicd
   image_stream_namespace: openshift
   image_stream_name: openjdk-11-rhel8:1.0
 

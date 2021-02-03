@@ -5,12 +5,12 @@ metadata:
   labels:
     app.kubernetes.io/name: {{.Release.Name }}
   name: {{ .Values.namespace }}
-{{- if .Values.namespace_qa }}
----
-apiVersion: v1
-kind: Namespace
-metadata:
-  labels:
-    app.kubernetes.io/name: {{.Release.Name }}
-  name: {{ .Values.namespace_qa }}
-{{- end }}
+#{{- if .Values.namespace_qa }}
+#---
+#apiVersion: v1
+#kind: Namespace
+#metadata:
+#  labels:
+#    app.kubernetes.io/name: {{.Release.Name }}
+#  name: {{ .Values.namespace_qa }}
+#{{- end }}

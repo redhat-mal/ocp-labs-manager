@@ -52,7 +52,7 @@ spec:
           - name: NAMESPACE_TO
             value: {{ .Values.namespace_qa}}
           - name: NAMESPACE_FROM
-            value: {{ .Values.build.namespace }}
+            value: {{ .Values.pipeline.namespace }}
           - name: NAMESPACE_TOOLS
             value: {{ .Values.pipeline.namespace_tools }}
           - name: APP_NAME
@@ -119,7 +119,7 @@ spec:
           - name: NAMESPACE_TO
             value: {{ .Values.namespace}}
           - name: NAMESPACE_FROM
-            value: {{ .Values.build.namespace }}
+            value: {{ .Values.pipeline.namespace }}
           - name: APP_NAME
             value: {{ .Values.application_name }}
           - name: IMAGE_TAG

@@ -1,9 +1,0 @@
-{{- if .Values.build.deploy }}
----
-apiVersion: v1
-kind: Namespace
-metadata:
-  labels:
-    app.kubernetes.io/name: {{.Release.Name }}
-  name: {{ .Values.build.namespace }}
-{{- end }}

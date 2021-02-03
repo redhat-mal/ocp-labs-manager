@@ -6,7 +6,7 @@ metadata:
   labels:
     app.kubernetes.io/name: {{ .Release.Name }}
   name: {{ .Release.Name }}-sa_edit
-  namespace: {{ .Values.build.namespace }}
+  namespace: {{ .Values.pipeline.namespace }}
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
