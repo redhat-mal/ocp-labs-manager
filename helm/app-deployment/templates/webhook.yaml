@@ -124,6 +124,10 @@ spec:
             value: {{ .Values.application_name }}
           - name: IMAGE_TAG
             value: $(params.gitrevision)
+{{ if .Values.pipeline.googlechat_secret }}
+          - name: GOOGLE_CHAT_SECRET
+            value: {{ .Values.pipeline.googlechat_secret }}
+{{- end }}
         resources:
           - name: maven-build-image-pipeline-git
             resourceRef:

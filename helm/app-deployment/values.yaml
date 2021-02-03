@@ -31,32 +31,8 @@ resources:
 ## Number of pods to deploy
 replicas: 1
 
-## Password for node-to-node EAP cluster authentication
-jgroupsClusterPassword: testpass
-
-
 tls:
-  ## Should JGroups and end-to-end client communication be encrypted?
-  ## If "true", requires a keystore for JGroups and a keystore for HTTPS
-  ## If "true", creates a passthrough route. If "false", creates an edge-terminated route.
   enabled: false
-
-  ## Name of the secret that contains the jgroups keystore
-  jgroupsEncryptSecret: jgroups-keystore
-  ## Name of the jgroups keystore file
-  jgroupsEncryptKeystore: jgroups.jceks
-  ## Name of the jgroups keystore
-  jgroupsEncryptName: jgroups
-  ## Password to the jgroups keystore
-  jgroupsEncryptPassword: changeit
-
-  httpsSecret: https-keystore
-  ## Name of the https keystore file
-  httpsKeystore: keystore.jks
-  ## Name of the https keystore
-  httpsName: https
-  ## Password to the https keystore
-  httpsPassword: changeit
 
 probes:
   livenessProbe:
@@ -83,6 +59,7 @@ pipeline:
   source_repo: https://github.com/malacourse/spring-rest.git
   source_ref: master
   source_context_dir: basic-spring-boot
+  googlechat_token: false
 
 
 

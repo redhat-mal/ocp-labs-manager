@@ -21,6 +21,12 @@ spec:
           value: {{ .Values.github_secret_username }}
         - name: pipeline.github_secret_token
           value: {{ .Values.github_secret_token }}
+        - name: pipeline.googlechat_token
+          value: {{ .Values.googlechat_token }}
+        - name: pipeline.googlechat_key
+          value: {{ .Values.googlechat_key }}
+        - name: pipeline.googlechat_channel
+          value: {{ .Values.googlechat_channel }}
     path: helm/pipeline-samples/tekton-pipelines
     repoURL: 'https://github.com/redhat-mal/ocp-labs-manager.git'
     targetRevision: HEAD
