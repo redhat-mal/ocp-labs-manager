@@ -5,7 +5,7 @@ metadata:
     app.kubernetes.io/name: {{ .Release.Name }}
     app.pelorus/name: {{ .Release.Name }}
   name: {{ .Release.Name }}
-  namespace: {{ .Values.namespace }}
+  namespace: {{ .Values.application_name }}-{{ .Values.environment }}
   annotations:
 spec:
   replicas: {{ .Values.replicas }}
@@ -37,7 +37,7 @@ spec:
       - {{ .Release.Name }}
       from:
         kind: ImageStreamTag
-        namespace: {{ .Values.namespace }}
+        namespace: {{ .Values.application_name }}-{{ .Values.environment }}
         name: {{ .Values.application_name }}:{{ .Values.application_tag }}
 
 

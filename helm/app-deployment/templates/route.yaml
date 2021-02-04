@@ -3,7 +3,7 @@ apiVersion: route.openshift.io/v1
 kind: Route
 metadata:
   name: {{ .Release.Name }}
-  namespace: {{ .Values.namespace }}
+  namespace: {{ .Values.application_name }}-{{ .Values.environment }}
 spec:
   host: "{{ .Values.routeHostname }}"
   tls:
