@@ -144,8 +144,6 @@ spec:
     - build-image
   - name: update-helm-app
     params:
-    - name: appName
-      value: "$(params.APP_NAME)"
     - name: charts_dir
       value: "$(params.APP_CHARTS_DIR)"
     - name: release_name
