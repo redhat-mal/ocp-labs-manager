@@ -45,6 +45,11 @@ spec:
        git config --global user.email "$GIT_USERNAME@redhat.com"
        git config --global user.name "$GIT_USERNAME"
        git config credential.helper 'cache --timeout=30'
+
+       git fetch
+       git checkout main
+
+
        ls -lrt $(params.filePath)
        NEW_VAL=$(params.imageTag)
        REPLACE_VAL=$(awk '/image_tag/{print}' $(params.filePath))
@@ -54,7 +59,7 @@ spec:
        cat $(params.filePath)
        git add $(params.filePath)
        git commit -m "Tekton Pipeline automation update image to: $(params.imageTag)"
-       git push origin 
+       git push origin main
        if [[ $? -ne 0 ]]; 
        then
          echo "Failed updating ImageTag, most likely invalid Git Token"
