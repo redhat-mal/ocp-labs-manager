@@ -127,7 +127,7 @@ spec:
     - get-build-id
     - sonar-scan
     - unit-test
-  - name: update-repo-image-tag
+  - name: update-app-image-tag
     params:
     - name: filePath
       value: "$(params.ARGO_RESOURCE_FILE_PATH)"
@@ -135,7 +135,7 @@ spec:
       #value: "$(params.IMAGE_TAG)"
       value: "$(tasks.get-build-id.results.build-id)"
     taskRef:
-      name: update-argo-app-tag
+      name: update-repo-image-tag
     resources:
       inputs:
       - name: source

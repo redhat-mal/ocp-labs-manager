@@ -74,6 +74,6 @@ spec:
     resources:
       inputs:
       - name: source
-        resource: maven-build-image-pipeline-git
+        resource: test-and-promote-pipeline-git
     runAfter:
     - promote-image
