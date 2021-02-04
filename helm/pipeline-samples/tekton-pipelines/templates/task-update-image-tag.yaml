@@ -12,6 +12,8 @@ spec:
       description: The expected value
     - name: imageTag
       description: The url to curl
+    - name: gitBranch
+      description: The branch to update
   resources:
     inputs:
     - name: source
@@ -47,7 +49,7 @@ spec:
        git config credential.helper 'cache --timeout=30'
 
        git fetch
-       git checkout main
+       git checkout $(params.gitBranch)
 
 
        ls -lrt $(params.filePath)
@@ -59,7 +61,7 @@ spec:
        cat $(params.filePath)
        git add $(params.filePath)
        git commit -m "Tekton Pipeline automation update image to: $(params.imageTag)"
-       git push origin main
+       git push origin $(params.gitBranch)
        if [[ $? -ne 0 ]]; 
        then
          echo "Failed updating ImageTag, most likely invalid Git Token"
