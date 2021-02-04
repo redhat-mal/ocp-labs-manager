@@ -60,12 +60,12 @@ spec:
        git checkout qa
        ls -lrt
        NEW_VAL=$(params.imageTag)
-       ls -lrt ./.openshift
-       REPLACE_VAL=$(awk '/name: application_tag/{getline; print}' ./.openshift/spring-boot-demo.yaml)
+       ls -lrt $(params.filePath)
+       REPLACE_VAL=$(awk '/name: image_tag/{getline; print}' $(params.filePath))
        REPLACE_VAL=${REPLACE_VAL#*:}
        echo "FOO: $REPLACE_VAL"
-       sed -i "s/$REPLACE_VAL/ $NEW_VAL/" ./.openshift/spring-boot-demo.yaml
-       cat ./.openshift/spring-boot-demo.yaml
+       sed -i "s/$REPLACE_VAL/ $NEW_VAL/" $(params.filePath)
+       cat $(params.filePath)
        git add $(params.filePath)
        git branch -m qa-$(params.imageTag)
        git commit -m "Updating QA Tag to $(params.imageTag)"

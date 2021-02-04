@@ -31,6 +31,9 @@ spec:
     - name: TEST_RESULT
       type: string
       default: "hello world"
+    - name: APP_CHARTS_DIR
+      type: string
+      default: helm/argo-app
   resources:
   - name: test-and-promote-pipeline-git
     type: git
@@ -58,15 +61,19 @@ spec:
       name: promote-image
     runAfter:
     - functional-test
-  - name: update-app
+  - name: update-helm-app
     params:
-    - name: argocdNamespace
-      value: "$(params.NAMESPACE_TOOLS)"
+    - name: charts_dir
+      value: "$(params.APP_CHARTS_DIR)"
+    - name: release_name
+      value: "$(params.APP_NAME)-stage"
+    - name: release_namespace
+      value: "{{ .Values.pipeline.tools_namespace }}"
     taskRef:
-      name: update-argo-app
+      name: helm-upgrade-from-source
     resources:
       inputs:
       - name: source
-        resource: test-and-promote-pipeline-git
+        resource: maven-build-image-pipeline-git
     runAfter:
     - promote-image

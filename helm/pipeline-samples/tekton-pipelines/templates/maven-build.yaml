@@ -24,7 +24,7 @@ spec:
       default: latest
     - name: ARGO_RESOURCE_FILE_PATH
       type: string
-      default: "./.openshift/spring-boot-demo.yaml"
+      default: "./helm/argo-app/values.yaml"
     - name: GOOGLE_CHAT_SECRET
       type: string
       default: None
@@ -127,10 +127,10 @@ spec:
     - get-build-id
     - sonar-scan
     - unit-test
-  - name: update-app-image-tag
+  - name: update-repo-image-tag
     params:
-    - name: appName
-      value: "$(params.APP_NAME)"
+    - name: filePath
+      value: "$(params.ARGO_RESOURCE_FILE_PATH)"
     - name: imageTag
       #value: "$(params.IMAGE_TAG)"
       value: "$(tasks.get-build-id.results.build-id)"
