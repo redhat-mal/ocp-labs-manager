@@ -1,0 +1,41 @@
+---
+apiVersion: image.openshift.io/v1
+kind: ImageStream
+metadata:
+  labels:
+    app.kubernetes.io/name: {{ .Release.Name }}
+  name: helm-task
+  namespace: {{ .Values.pipeline.namespace }}
+---
+apiVersion: build.openshift.io/v1
+kind: BuildConfig
+metadata:
+  labels:
+    app.kubernetes.io/name: {{.Release.Name }}
+  name: helm-task
+  namespace: {{ .Values.pipeline.namespace }}
+spec:
+  failedBuildsHistoryLimit: 5
+  output:
+    to:
+      kind: ImageStreamTag
+      name: helm-task:latest
+  postCommit: {}
+  resources: {}
+  runPolicy: Serial
+  source:
+    contextDir: helm/pipeline-samples/tekton-pipelines/files/helm
+    git:
+      ref: master
+      uri: https://github.com/redhat-mal/ocp-labs-manager.git
+    type: Git
+  strategy:
+    type: Docker
+    dockerStrategy:
+      from:
+        kind: DockerImage
+        name: quay.io/bitnami/git:latest 
+  triggers:
+  - type: ConfigChange
+  - type: ImageChange
+
