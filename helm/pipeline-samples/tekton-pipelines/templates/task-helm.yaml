@@ -29,16 +29,20 @@ spec:
     - name: helm_version
       description: "Specify a specific helm version"
       default: "latest"
+    - name: git_branch
+      description: "Specify a specific git version"
+      default: "main"
   resources:
     inputs:
     - name: source
       type: git
   steps:
     - name: upgrade
-      image: docker.io/lachlanevenson/k8s-helm:$(inputs.params.helm_version)
+      image: image-registry.openshift-image-registry.svc:5000/{{ .Values.pipeline.namespace }}/helm-task:latest
       workingDir: /workspace/source
       script: |
         echo current installed helm releases
+        git checkout $(inputs.params.git_branch)
         helm list --namespace "$(inputs.params.release_namespace)"
         echo installing helm chart...
         helm upgrade --install --wait --namespace "$(inputs.params.release_namespace)" --version $(inputs.params.release_version) $(inputs.params.release_name) $(inputs.params.charts_dir) --debug --set "$(inputs.params.overwrite_values)"

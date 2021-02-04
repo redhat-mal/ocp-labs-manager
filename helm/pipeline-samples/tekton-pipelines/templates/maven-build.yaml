@@ -28,6 +28,9 @@ spec:
     - name: GOOGLE_CHAT_SECRET
       type: string
       default: None
+    - name: APP_CHARTS_DIR
+      type: string
+      default: helm/argo-app
   resources:
   - name: maven-build-image-pipeline-git
     type: git
@@ -139,6 +142,24 @@ spec:
         resource: maven-build-image-pipeline-git
     runAfter:
     - build-image
+  - name: update-helm-app
+    params:
+    - name: appName
+      value: "$(params.APP_NAME)"
+    - name: charts_dir
+      value: "$(params.APP_CHARTS_DIR)"
+    - name: release_name
+      value: "$(params.APP_NAME)-stage"
+    - name: release_namespace
+      value: "{{ .Values.pipeline.tools_namespace }}"
+    taskRef:
+      name: helm-upgrade-from-source
+    resources:
+      inputs:
+      - name: source
+        resource: maven-build-image-pipeline-git
+    runAfter:
+    - update-app-image-tag
   - name: create-qa-pull-req
     params:
     - name: filePath

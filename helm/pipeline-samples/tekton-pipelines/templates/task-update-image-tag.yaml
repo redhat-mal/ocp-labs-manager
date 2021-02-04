@@ -57,7 +57,7 @@ spec:
        git push origin 
        if [[ $? -ne 0 ]]; 
        then
-         echo "Failed Creating PR, most likely invalid Git Token"
+         echo "Failed updating ImageTag, most likely invalid Git Token"
          exit 1
        fi
        echo "Image tag updated"
