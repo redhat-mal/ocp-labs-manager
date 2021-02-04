@@ -23,7 +23,6 @@ spec:
     spec:
       containers:
         - name: {{ .Release.Name }}
-          env: {}
           imagePullPolicy: Always
           livenessProbe: 
           readinessProbe: 
