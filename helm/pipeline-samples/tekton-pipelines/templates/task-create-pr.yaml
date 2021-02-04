@@ -61,9 +61,9 @@ spec:
        ls -lrt
        NEW_VAL=$(params.imageTag)
        ls -lrt $(params.filePath)
-       REPLACE_VAL=$(awk '/name: image_tag/{getline; print}' $(params.filePath))
+       NEW_VAL=$(params.imageTag)
+       REPLACE_VAL=$(awk '/image_tag/{print}' $(params.filePath))
        REPLACE_VAL=${REPLACE_VAL#*:}
-       echo "FOO: $REPLACE_VAL"
        sed -i "s/$REPLACE_VAL/ $NEW_VAL/" $(params.filePath)
        cat $(params.filePath)
        git add $(params.filePath)

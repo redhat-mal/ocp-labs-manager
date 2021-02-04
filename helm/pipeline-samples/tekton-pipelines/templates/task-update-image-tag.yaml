@@ -47,7 +47,7 @@ spec:
        git config credential.helper 'cache --timeout=30'
        ls -lrt $(params.filePath)
        NEW_VAL=$(params.imageTag)
-       REPLACE_VAL=$(awk '/name: image_tag/{getline; print}' $(params.filePath))
+       REPLACE_VAL=$(awk '/image_tag/{print}' $(params.filePath))
        REPLACE_VAL=${REPLACE_VAL#*:}
        echo "FOO: $REPLACE_VAL"
        sed -i "s/$REPLACE_VAL/ $NEW_VAL/" $(params.filePath)
