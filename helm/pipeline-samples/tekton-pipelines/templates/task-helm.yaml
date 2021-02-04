@@ -42,6 +42,7 @@ spec:
       workingDir: /workspace/source
       script: |
         echo current installed helm releases
+        git fetch
         git checkout $(inputs.params.git_branch)
         helm list --namespace "$(inputs.params.release_namespace)"
         echo installing helm chart...
