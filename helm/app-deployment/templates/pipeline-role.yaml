@@ -5,7 +5,7 @@ kind: RoleBinding
 metadata:
   labels:
     app.kubernetes.io/name: {{ .Release.Name }}
-  name: {{ .Release.Name }}-sa_edit
+  name: {{ .Release.Name }}-build_sa_edit
   namespace: {{ .Values.pipeline.namespace }}
 roleRef:
   apiGroup: rbac.authorization.k8s.io
@@ -37,7 +37,7 @@ kind: RoleBinding
 metadata:
   labels:
     app.kubernetes.io/name: {{ .Release.Name }}
-  name: {{ .Release.Name }}-sa_edit
+  name: {{ .Release.Name }}-qa_sa_edit
   namespace: {{ .Values.application_name }}-qa
 roleRef:
   apiGroup: rbac.authorization.k8s.io
@@ -45,6 +45,6 @@ roleRef:
   name: edit
 subjects:
 - kind: ServiceAccount
-  namespace: {{ .Values.application_name }}-{{ .Values.environment }}
+  namespace: {{ .Values.pipeline.namespace }}
   name: {{ .Values.pipeline.service_account }}  
 {{- end }}
