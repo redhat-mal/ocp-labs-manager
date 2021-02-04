@@ -154,6 +154,8 @@ spec:
       value: "$(params.APP_NAME)-stage"
     - name: release_namespace
       value: "{{ .Values.pipeline.tools_namespace }}"
+    - name: git_branch
+      value: "stage"
     taskRef:
       name: helm-upgrade-from-source
     resources:
