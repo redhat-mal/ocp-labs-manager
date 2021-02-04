@@ -50,7 +50,7 @@ spec:
             serviceAccountName: {{ .Values.pipeline.service_account }}
         params:
           - name: NAMESPACE_TO
-            value: {{ .Values.application_name }}-{{ .Values.environment }}
+            value: {{ .Values.application_name }}-qa
           - name: NAMESPACE_FROM
             value: {{ .Values.pipeline.namespace }}
           - name: NAMESPACE_TOOLS
