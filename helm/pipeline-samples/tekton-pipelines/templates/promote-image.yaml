@@ -57,6 +57,8 @@ spec:
       value: "$(params.APP_NAME)"
     - name: imageTag
       value: "$(params.IMAGE_TAG)"
+    - name: git_branch
+      value: qa
     taskRef:
       name: promote-image
     runAfter:
@@ -66,7 +68,7 @@ spec:
     - name: charts_dir
       value: "$(params.APP_CHARTS_DIR)"
     - name: release_name
-      value: "$(params.APP_NAME)-stage"
+      value: "$(params.APP_NAME)-qa"
     - name: release_namespace
       value: "{{ .Values.pipeline.tools_namespace }}"
     taskRef:
