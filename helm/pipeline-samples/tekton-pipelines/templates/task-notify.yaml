@@ -24,7 +24,8 @@ spec:
     script: |
       #!/bin/sh
       echo "TOKEN SECRET: $(params.token-secret)"
-      if [ "$(params.token-secret)" -neq "None" ]]; then 
+      env
+      if [ "$(params.token-secret)" != "None" ]; then 
         curl  -X POST  -H 'Content-Type: application/json' "https://chat.googleapis.com/v1/spaces/$CHANNEL/messages?key=$KEY&token=$TOKEN"  -d '{"text": "$(params.message)"}'
       else
         echo "No Google Chat Channel values specified, Skipping"
