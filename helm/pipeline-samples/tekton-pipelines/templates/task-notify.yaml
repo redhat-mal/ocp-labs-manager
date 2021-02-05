@@ -23,6 +23,7 @@ spec:
     image: image-registry.openshift-image-registry.svc:5000/{{ .Values.pipeline.namespace }}/pull-request-task:latest 
     script: |
       #!/bin/sh
+      echo "TOKEN SECRET: $(params.token-secret)"
       if [ "$(params.token-secret)" -neq "None" ]]; then 
         curl  -X POST  -H 'Content-Type: application/json' "https://chat.googleapis.com/v1/spaces/$CHANNEL/messages?key=$KEY&token=$TOKEN"  -d '{"text": "$(params.message)"}'
       else
