@@ -52,7 +52,7 @@ pipeline:
   name: maven-build-image-pipeline
   namespace: att-pipelines
   namespace_tools: cicd-tools
-  service_account: att-pipelines-sa
+  service_account: pipelines-sa
   source_repo: https://github.com/malacourse/spring-rest.git
   source_ref: master
   source_context_dir: basic-spring-boot
