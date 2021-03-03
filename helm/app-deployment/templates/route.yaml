@@ -1,3 +1,4 @@
+{{- if not .Values.serverless }}
 {{- if .Values.createRoute }}
 apiVersion: route.openshift.io/v1
 kind: Route
@@ -19,4 +20,5 @@ spec:
     weight: 100
 status:
   ingress: []
+{{- end }}
 {{- end }}

@@ -6,6 +6,8 @@ environment: stage
 application_tag: latest
 application_name: spring-rest-demo
 
+serverless: false
+
 replicaCount: 1
 
 triggers:

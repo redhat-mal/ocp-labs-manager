@@ -1,0 +1,16 @@
+{{- if .Values.serverless }}
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/name: {{ .Release.Name }}
+    app.pelorus/name: {{ .Release.Name }}
+  name: {{ .Release.Name }}
+  namespace: {{ .Values.application_name }}-{{ .Values.environment }}
+  annotations:
+spec:
+  template:
+    spec:
+      containers:
+        - image: image-registry.openshift-image-registry.svc:5000/{{ .Values.application_name }}-{{ .Values.environment }}/{{ .Values.application_name }}:{{ .Values.application_tag }}
+{{- end }} 
